@@ -1,6 +1,5 @@
-package me.msicraft.consumefood2.API;
+package me.msicraft.consumefood2;
 
-import me.msicraft.consumefood2.ConsumeFood2;
 import org.bukkit.Bukkit;
 
 import java.util.function.Consumer;

@@ -1,9 +1,8 @@
 package me.msicraft.upper_1_20_6;
 
-import me.msicraft.wrapper.Wrapper;
+import me.msicraft.API.Wrapper;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class Upper_1_20_6 implements Wrapper {
 

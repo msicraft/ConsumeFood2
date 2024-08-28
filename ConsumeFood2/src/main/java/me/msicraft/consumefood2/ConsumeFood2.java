@@ -1,6 +1,5 @@
 package me.msicraft.consumefood2;
 
-import me.msicraft.consumefood2.API.BukkitChecker;
 import me.msicraft.consumefood2.Command.MainCommand;
 import me.msicraft.consumefood2.PlayerData.Event.PlayerDataRelatedEvent;
 import me.msicraft.consumefood2.PlayerData.PlayerDataManager;
@@ -31,6 +30,7 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood 2] ";
     private String version = null;
+    private boolean usePlaceHolderAPI = false;
 
     private PlayerDataManager playerDataManager;
     private VanillaFoodManager vanillaFoodManager;
@@ -46,6 +46,13 @@ public final class ConsumeFood2 extends JavaPlugin {
             return;
         } else {
             Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Detect NBTAPI plugin");
+        }
+
+        if (getConfig().getBoolean("Compatibility.PlaceholderAPI")) {
+            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                usePlaceHolderAPI = true;
+                Bukkit.getConsoleSender().sendMessage(PREFIX + "Detect PlaceholderAPI plugin");
+            }
         }
 
         BukkitChecker bukkitChecker = new BukkitChecker(this, -1);
@@ -87,7 +94,6 @@ public final class ConsumeFood2 extends JavaPlugin {
         commandRegister();
 
         reloadVariables();
-
         getServer().getConsoleSender().sendMessage(PREFIX + "Plugin Enable");
     }
 
@@ -141,6 +147,10 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     public Set<String> getLatestFunctionVersions() {
         return latestFunctionVersions;
+    }
+
+    public boolean isUsePlaceHolderAPI() {
+        return usePlaceHolderAPI;
     }
 
     public PlayerDataManager getPlayerDataManager() {

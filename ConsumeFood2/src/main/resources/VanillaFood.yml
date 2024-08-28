@@ -1,0 +1,118 @@
+Food:
+  APPLE:
+    FoodLevel: 4
+    Saturation: 2.4
+  BAKED_POTATO:
+    FoodLevel: 5
+    Saturation: 6
+  BEEF:
+    FoodLevel: 3
+    Saturation: 1.8
+  BEETROOT:
+    FoodLevel: 1
+    Saturation: 1.2
+  BEETROOT_SOUP:
+    FoodLevel: 6
+    Saturation: 7.2
+  BREAD:
+    FoodLevel: 5
+    Saturation: 6
+  CARROT:
+    FoodLevel: 3
+    Saturation: 3.6
+  CHICKEN:
+    FoodLevel: 2
+    Saturation: 2.1
+  CHORUS_FRUIT:
+    FoodLevel: 4
+    Saturation: 2.4
+  COD:
+    FoodLevel: 2
+    Saturation: 0.4
+  COOKED_BEEF:
+    FoodLevel: 8
+    Saturation: 12.8
+  COOKED_CHICKEN:
+    FoodLevel: 6
+    Saturation: 7.2
+  COOKED_COD:
+    FoodLevel: 5
+    Saturation: 6
+  COOKED_MUTTON:
+    FoodLevel: 6
+    Saturation: 9.6
+  COOKED_PORKCHOP:
+    FoodLevel: 8
+    Saturation: 12.8
+  COOKED_RABBIT:
+    FoodLevel: 5
+    Saturation: 6
+  COOKED_SALMON:
+    FoodLevel: 6
+    Saturation: 9.6
+  COOKIE:
+    FoodLevel: 2
+    Saturation: 0.5
+  DRIED_KELP:
+    FoodLevel: 1
+    Saturation: 0.6
+  ENCHANTED_GOLDEN_APPLE:
+    FoodLevel: 4
+    Saturation: 9.6
+  GLOW_BERRIES:
+    FoodLevel: 2
+    Saturation: 0.4
+  GOLDEN_APPLE:
+    FoodLevel: 4
+    Saturation: 9.6
+  GOLDEN_CARROT:
+    FoodLevel: 6
+    Saturation: 14.4
+  HONEY_BOTTLE:
+    FoodLevel: 6
+    Saturation: 1.2
+  MELON_SLICE:
+    FoodLevel: 2
+    Saturation: 1.2
+  MUSHROOM_STEW:
+    FoodLevel: 6
+    Saturation: 7.2
+  MUTTON:
+    FoodLevel: 2
+    Saturation: 1.2
+  POISONOUS_POTATO:
+    FoodLevel: 2
+    Saturation: 1.2
+  PORKCHOP:
+    FoodLevel: 3
+    Saturation: 0.6
+  POTATO:
+    FoodLevel: 1
+    Saturation: 0.6
+  PUFFERFISH:
+    FoodLevel: 1
+    Saturation: 0.2
+  PUMPKIN_PIE:
+    FoodLevel: 8
+    Saturation: 4.8
+  RABBIT:
+    FoodLevel: 2
+    Saturation: 1.2
+  RABBIT_STEW:
+    FoodLevel: 10
+    Saturation: 12
+  ROTTEN_FLESH:
+    FoodLevel: 4
+    Saturation: 0.8
+  SALMON:
+    FoodLevel: 2
+    Saturation: 0.2
+  SPIDER_EYE:
+    FoodLevel: 2
+    Saturation: 3.2
+  SWEET_BERRIES:
+    FoodLevel: 1
+    Saturation: 0
+  TROPICAL_FISH:
+    FoodLevel: 1
+    Saturation: 0.2

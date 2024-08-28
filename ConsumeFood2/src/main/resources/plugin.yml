@@ -2,6 +2,8 @@ name: ConsumeFood2
 version: 1.0 #'${project.version}'
 main: me.msicraft.consumefood2.ConsumeFood2
 api-version: '1.16'
+depend: [NBTAPI]
+softdepend: [PlaceholderAPI]
 commands:
   consumefood2:
     description: Main command

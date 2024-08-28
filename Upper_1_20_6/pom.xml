@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>me.msicraft</groupId>
-            <artifactId>Wrapper</artifactId>
+            <artifactId>API</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>
