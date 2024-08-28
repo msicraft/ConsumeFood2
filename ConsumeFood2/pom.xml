@@ -13,7 +13,7 @@
     <artifactId>ConsuemFood2</artifactId>
     <packaging>jar</packaging>
 
-    <name>ConsumeFood2-Core</name>
+    <name>ConsumeFood2</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
