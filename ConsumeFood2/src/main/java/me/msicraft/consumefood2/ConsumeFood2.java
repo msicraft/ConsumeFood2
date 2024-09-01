@@ -4,6 +4,7 @@ import me.msicraft.consumefood2.Command.MainCommand;
 import me.msicraft.consumefood2.PlayerData.Event.PlayerDataRelatedEvent;
 import me.msicraft.consumefood2.PlayerData.PlayerDataManager;
 import me.msicraft.consumefood2.VanillaFood.VanillaFoodManager;
+import me.msicraft.consumefood2.VanillaFood.VanillaFoodRelatedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -26,11 +27,9 @@ public final class ConsumeFood2 extends JavaPlugin {
         return plugin;
     }
 
-    private final Set<String> latestFunctionVersions = Set.of("1.20.5", "1.20.6", "1.21", "1.21.1");
-
     public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood 2] ";
-    private String version = null;
     private boolean usePlaceHolderAPI = false;
+    private boolean useFoodComponentFunction = false;
 
     private PlayerDataManager playerDataManager;
     private VanillaFoodManager vanillaFoodManager;
@@ -56,13 +55,17 @@ public final class ConsumeFood2 extends JavaPlugin {
         }
 
         BukkitChecker bukkitChecker = new BukkitChecker(this, -1);
-        version = bukkitChecker.getBukkitVersion();
-        if (version == null) {
+        String bukkitVersion = bukkitChecker.getBukkitVersion();
+        if (bukkitVersion == null) {
             getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.RED + "Bukkit version not found");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         } else {
-            getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Bukkit Version: " + version);
+            getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Bukkit Version: " + bukkitVersion);
+            Set<String> sets = Set.of("1.20.5", "1.20.6", "1.21", "1.21.1");
+            if (sets.contains(bukkitVersion)) {
+                useFoodComponentFunction = true;
+            }
         }
 
         bukkitChecker.getPluginUpdateCheck(version -> {
@@ -99,12 +102,14 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        vanillaFoodManager.saveVanillaFoodData();
         getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.RED + "Plugin Disable");
     }
 
     private void eventRegister() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new PlayerDataRelatedEvent(this), this);
+        pluginManager.registerEvents(new VanillaFoodRelatedEvent(this), this);
     }
 
     private void commandRegister() {
@@ -113,6 +118,7 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     public void reloadVariables() {
         reloadConfig();
+        vanillaFoodManager.reloadVariables();
     }
 
     protected FileConfiguration config;
@@ -141,12 +147,8 @@ public final class ConsumeFood2 extends JavaPlugin {
         //getServer().getConsoleSender().sendMessage(PREFIX + "Plugin replaced the old config.yml with config_old.yml and created a new config.yml");
     }
 
-    public String getVersion() {
-        return version;
-    }
-
-    public Set<String> getLatestFunctionVersions() {
-        return latestFunctionVersions;
+    public boolean isUseFoodComponentFunction() {
+        return useFoodComponentFunction;
     }
 
     public boolean isUsePlaceHolderAPI() {

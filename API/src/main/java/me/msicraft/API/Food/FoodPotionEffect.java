@@ -30,4 +30,8 @@ public class FoodPotionEffect {
         return potionEffect;
     }
 
+    public String toFormat() {
+        return potionEffect.getType().getName() + ":" + potionEffect.getAmplifier() + ":" + potionEffect.getDuration() + ":" + chance;
+    }
+
 }

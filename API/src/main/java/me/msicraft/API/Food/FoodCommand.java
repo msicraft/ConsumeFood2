@@ -1,6 +1,6 @@
 package me.msicraft.API.Food;
 
-public class FoodCommandExecute {
+public class FoodCommand {
 
     public enum ExecuteType {
         CONSOLE, PLAYER
@@ -8,7 +8,7 @@ public class FoodCommandExecute {
     private final String command;
     private final ExecuteType executeType;
 
-    public FoodCommandExecute(String command, ExecuteType executeType) {
+    public FoodCommand(String command, ExecuteType executeType) {
         this.command = command;
         this.executeType = executeType;
     }
@@ -19,6 +19,10 @@ public class FoodCommandExecute {
 
     public ExecuteType getExecuteType() {
         return executeType;
+    }
+
+    public String toFormat() {
+        return executeType.name() + " " + command;
     }
 
 }

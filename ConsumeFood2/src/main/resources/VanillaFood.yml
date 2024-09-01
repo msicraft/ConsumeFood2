@@ -2,6 +2,10 @@ Food:
   APPLE:
     FoodLevel: 4
     Saturation: 2.4
+    CoolDown: 0
+    InstantEat: false
+    PotionEffect:
+    Command:
   BAKED_POTATO:
     FoodLevel: 5
     Saturation: 6
@@ -23,9 +27,6 @@ Food:
   CHICKEN:
     FoodLevel: 2
     Saturation: 2.1
-  CHORUS_FRUIT:
-    FoodLevel: 4
-    Saturation: 2.4
   COD:
     FoodLevel: 2
     Saturation: 0.4
@@ -59,12 +60,20 @@ Food:
   ENCHANTED_GOLDEN_APPLE:
     FoodLevel: 4
     Saturation: 9.6
+    PotionEffect:
+      - ABSORPTION:4:120:1
+      - REGENERATION:2:20:1
+      - FIRE_RESISTANCE:1:300:1
+      - RESISTANCE:1:300:1
   GLOW_BERRIES:
     FoodLevel: 2
     Saturation: 0.4
   GOLDEN_APPLE:
     FoodLevel: 4
     Saturation: 9.6
+    PotionEffect:
+      - ABSORPTION:1:120:1
+      - REGENERATION:2:5:1
   GOLDEN_CARROT:
     FoodLevel: 6
     Saturation: 14.4
@@ -83,6 +92,8 @@ Food:
   POISONOUS_POTATO:
     FoodLevel: 2
     Saturation: 1.2
+    PotionEffect:
+      - POISON:2:5:1
   PORKCHOP:
     FoodLevel: 3
     Saturation: 0.6
@@ -92,6 +103,10 @@ Food:
   PUFFERFISH:
     FoodLevel: 1
     Saturation: 0.2
+    PotionEffect:
+      - HUNGER:3:15:1
+      - POISON:2:60:1
+      - NAUSEA:1:15:1
   PUMPKIN_PIE:
     FoodLevel: 8
     Saturation: 4.8
@@ -104,12 +119,16 @@ Food:
   ROTTEN_FLESH:
     FoodLevel: 4
     Saturation: 0.8
+    PotionEffect:
+      - HUNGER:1:30:0.8
   SALMON:
     FoodLevel: 2
     Saturation: 0.2
   SPIDER_EYE:
     FoodLevel: 2
     Saturation: 3.2
+    PotionEffect:
+      - POISON:1:4:1
   SWEET_BERRIES:
     FoodLevel: 1
     Saturation: 0

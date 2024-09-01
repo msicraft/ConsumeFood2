@@ -10,7 +10,6 @@ public class VanillaFood extends Food {
         BEEF(false, false, 3, 1.8), BEETROOT(false, false, 1, 1.2),
         BEETROOT_SOUP(false, true, 6, 7.2F), BREAD(false, false, 5, 6),
         CARROT(false, false, 3, 3.6), CHICKEN(false, false, 2, 2.1),
-        CHORUS_FRUIT(false, false, 4, 2.4), COD(false, false, 2, 0.4),
         COOKED_BEEF(false, false, 8, 12.8), COOKED_CHICKEN(false, false, 6, 7.2),
         COOKED_COD(false, false, 5, 6), COOKED_MUTTON(false, false, 6, 9.6),
         COOKED_PORKCHOP(false, false, 8, 12.8), COOKED_RABBIT(false, false, 5, 6),
@@ -47,11 +46,11 @@ public class VanillaFood extends Food {
             return isBowl;
         }
 
-        public int getFoodLevel() {
+        public int getBaseFoodLevel() {
             return foodLevel;
         }
 
-        public double getSaturation() {
+        public double getBaseSaturation() {
             return saturation;
         }
 
@@ -59,6 +58,13 @@ public class VanillaFood extends Food {
 
     public VanillaFood(Material material) {
         super(material);
+
+        for (Options option : Options.values()) {
+            if (option.isCustomFoodOption()) {
+                continue;
+            }
+            addOption(option, option.getBaseValue());
+        }
     }
 
 }
