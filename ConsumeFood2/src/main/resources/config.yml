@@ -4,7 +4,7 @@ Compatibility:
   PlaceholderAPI: true
 
 VanillaFood-Settings:
-  Cooldown-Setting: #Available Type values: [global, personal, disable]
+  Cooldown: #Available Type values: [global, personal, disable]
     Type: 'disable'
     Global-Cooldown: 0
 
@@ -13,4 +13,4 @@ CustomFood-Settings:
     Type: 'disable'
     Global-Cooldown: 0
   PlayerHead:
-    DisableBlockPlace: true
+    DisablePlace: true

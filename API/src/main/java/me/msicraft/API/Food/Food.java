@@ -3,42 +3,46 @@ package me.msicraft.API.Food;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public class Food {
 
     public enum Options {
-        MATERIAL(false, "Material", Material.APPLE),
-        TEXTURE_VALUE(true, "Texture Value", ""),
-        DISPLAYNAME(true, "DisplayName", null),
-        CUSTOM_MODEL_DATA(true, "CustomModelData", -1),
-        LORE(true, "Lore", Collections.EMPTY_LIST),
-        FOOD_LEVEL(false, "Food Level", 0),
-        SATURATION(false, "Saturation", 0.0F),
-        COOLDOWN(false, "Personal CoolDown", 0.0),
-        ENCHANT(true, "Enchant", Collections.EMPTY_LIST),
-        HIDE_ENCHANT(true, "Hide Enchant", false),
-        DisableCrafting(true, "Disable Crafting", false),
-        DisableSmelting(true, "Disable Smelting", false),
-        DisableAnvil(true, "Disable Anvil", false),
-        DisableEnchant(true, "Disable Enchant", false),
-        SOUND(true, "Sound", null),
-        POTION_COLOR(true, "PotionColor", ""),
-        HIDE_POTION_EFFECT(true, "Hide PotionEffect", false),
-        UNSTACKABLE(true, "UnStackable", false),
-        INSTANT_EAT(false, "Instant Eat", false),
-        ALWAYS_EAT(true, "Always Eat", false),
-        EAT_SECONDS(true, "Eat Seconds", -1F);
+        MATERIAL(false, "Material", Material.APPLE, "Material"),
+        TEXTURE_VALUE(true, "Texture Value", "", "TextureValue"),
+        DISPLAYNAME(true, "Display Name", null, "DisplayName"),
+        CUSTOM_MODEL_DATA(true, "Custom Model Data", -1, "CustomModelData"),
+        LORE(true, "Lore", null, "Lore"),
+        FOOD_LEVEL(false, "Food Level", 0, "FoodLevel"),
+        SATURATION(false, "Saturation", 0.0F, "Saturation"),
+        COOLDOWN(false, "Personal CoolDown", 0.0, "CoolDown"),
+        ENCHANT(true, "Enchant", null, "Enchant"),
+        HIDE_ENCHANT(true, "Hide Enchant", false, "HideEnchant"),
+        DISABLE_CRAFTING(true, "Disable Crafting", false, "DisableCrafting"),
+        DISABLE_SMELTING(true, "Disable Smelting", false, "DisableSmelting"),
+        DISABLE_ANVIL(true, "Disable Anvil", false, "DisableAnvil"),
+        DISABLE_ENCHANT(true, "Disable Enchant", false, "DisableEnchant"),
+        SOUND(true, "Sound", null, "Sound"),
+        POTION_COLOR(true, "PotionColor", "#ffffff", "PotionColor"),
+        HIDE_POTION_EFFECT(true, "Hide PotionEffect", false, "HidePotionEffect"),
+        UNSTACKABLE(true, "UnStackable", false, "UnStackable"),
+        INSTANT_EAT(false, "Instant Eat", false, "InstantEat"),
+        ALWAYS_EAT(true, "Always Eat", false, "AlwaysEat"),
+        EAT_SECONDS(true, "Eat Seconds", -1F, "EatSeconds"),
+        UUID(true, "", null, "UUID");
 
         private final boolean isCustomFoodOption;
         private final String displayName;
         private final Object baseValue;
+        private final String path;
 
-        Options(boolean isCustomFoodOption, String displayName, Object baseValue) {
+        Options(boolean isCustomFoodOption, String displayName, Object baseValue, String path) {
             this.isCustomFoodOption = isCustomFoodOption;
             this.displayName = displayName;
             this.baseValue = baseValue;
+            this.path = path;
         }
 
         public boolean isCustomFoodOption() {
@@ -53,6 +57,9 @@ public class Food {
             return baseValue;
         }
 
+        public String getPath() {
+            return path;
+        }
     }
 
     private final List<FoodPotionEffect> potionEffectList = new ArrayList<>();
@@ -61,7 +68,12 @@ public class Food {
     private final Map<Options, Object> optionMap = new HashMap<>();
 
     public Food(Material material) {
-        addOption(Options.MATERIAL, material);
+        setOption(Options.MATERIAL, material);
+    }
+
+    @NotNull
+    public Material getMaterial() {
+        return (Material) optionMap.getOrDefault(Options.MATERIAL, Material.APPLE);
     }
 
     public void addPotionEffect(PotionEffect potionEffect, double chance) {
@@ -106,12 +118,23 @@ public class Food {
         return commandList;
     }
 
-    public void addOption(Options option, Object value) {
+    public void setOption(Options option, Object value) {
+        if (option == Options.LORE || option == Options.ENCHANT) {
+            return;
+        }
         optionMap.put(option, value);
+    }
+
+    public boolean hasOption(Options option) {
+        return optionMap.containsKey(option);
     }
 
     public Object getOptionValue(Options option) {
         return optionMap.getOrDefault(option, option.getBaseValue());
+    }
+
+    public Set<Options> getOptions() {
+        return optionMap.keySet();
     }
 
 }

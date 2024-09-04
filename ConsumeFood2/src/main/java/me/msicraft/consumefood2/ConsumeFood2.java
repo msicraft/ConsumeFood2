@@ -1,10 +1,12 @@
 package me.msicraft.consumefood2;
 
 import me.msicraft.consumefood2.Command.MainCommand;
+import me.msicraft.consumefood2.CustomFood.CustomFoodManager;
+import me.msicraft.consumefood2.CustomFood.Event.CustomFoodRelatedEvent;
 import me.msicraft.consumefood2.PlayerData.Event.PlayerDataRelatedEvent;
 import me.msicraft.consumefood2.PlayerData.PlayerDataManager;
+import me.msicraft.consumefood2.VanillaFood.Event.VanillaFoodRelatedEvent;
 import me.msicraft.consumefood2.VanillaFood.VanillaFoodManager;
-import me.msicraft.consumefood2.VanillaFood.VanillaFoodRelatedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -33,6 +35,7 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     private PlayerDataManager playerDataManager;
     private VanillaFoodManager vanillaFoodManager;
+    private CustomFoodManager customFoodManager;
 
     @Override
     public void onEnable() {
@@ -82,6 +85,7 @@ public final class ConsumeFood2 extends JavaPlugin {
 
         playerDataManager = new PlayerDataManager(this);
         vanillaFoodManager = new VanillaFoodManager(this);
+        customFoodManager = new CustomFoodManager(this);
 
         final int configVersion = plugin.getConfig().contains("config-version", true) ? plugin.getConfig().getInt("config-version") : -1;
         if (configVersion != 1) {
@@ -102,7 +106,8 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        vanillaFoodManager.saveVanillaFoodData();
+        vanillaFoodManager.saveVanillaFood();
+        customFoodManager.saveCustomFood();
         getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.RED + "Plugin Disable");
     }
 
@@ -110,6 +115,7 @@ public final class ConsumeFood2 extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new PlayerDataRelatedEvent(this), this);
         pluginManager.registerEvents(new VanillaFoodRelatedEvent(this), this);
+        pluginManager.registerEvents(new CustomFoodRelatedEvent(this), this);
     }
 
     private void commandRegister() {
@@ -119,6 +125,7 @@ public final class ConsumeFood2 extends JavaPlugin {
     public void reloadVariables() {
         reloadConfig();
         vanillaFoodManager.reloadVariables();
+        customFoodManager.reloadVariables();
     }
 
     protected FileConfiguration config;
@@ -161,6 +168,10 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     public VanillaFoodManager getVanillaFoodManager() {
         return vanillaFoodManager;
+    }
+
+    public CustomFoodManager getCustomFoodManager() {
+        return customFoodManager;
     }
 
 }

@@ -1,10 +1,11 @@
-package me.msicraft.consumefood2.VanillaFood;
+package me.msicraft.consumefood2.VanillaFood.Event;
 
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.Food.Food;
-import me.msicraft.API.VanillaFood;
+import me.msicraft.API.Food.VanillaFood;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.Utils.PlayerUtil;
+import me.msicraft.consumefood2.VanillaFood.VanillaFoodManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

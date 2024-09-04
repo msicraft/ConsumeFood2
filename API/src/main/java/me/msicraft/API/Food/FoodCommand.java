@@ -22,7 +22,7 @@ public class FoodCommand {
     }
 
     public String toFormat() {
-        return executeType.name() + " " + command;
+        return executeType.name() + ":" + command;
     }
 
 }

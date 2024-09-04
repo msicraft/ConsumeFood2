@@ -1,6 +1,5 @@
-package me.msicraft.API;
+package me.msicraft.API.Food;
 
-import me.msicraft.API.Food.Food;
 import org.bukkit.Material;
 
 public class VanillaFood extends Food {
@@ -58,13 +57,6 @@ public class VanillaFood extends Food {
 
     public VanillaFood(Material material) {
         super(material);
-
-        for (Options option : Options.values()) {
-            if (option.isCustomFoodOption()) {
-                continue;
-            }
-            addOption(option, option.getBaseValue());
-        }
     }
 
 }

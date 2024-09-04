@@ -5,7 +5,7 @@ import me.msicraft.API.CoolDownType;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.FoodCommand;
 import me.msicraft.API.Food.FoodPotionEffect;
-import me.msicraft.API.VanillaFood;
+import me.msicraft.API.Food.VanillaFood;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.VanillaFood.File.VanillaFoodData;
 import org.bukkit.Bukkit;
@@ -41,102 +41,110 @@ public class VanillaFoodManager {
     private final Map<Material, VanillaFood> vanillaFoodMap = new HashMap<>();
 
     public void reloadVariables() {
-        saveVanillaFoodData();
+        saveVanillaFood();
         loadVanillaFood();
 
-        String cooldownTypeS = plugin.getConfig().getString("VanillaFood-Settings.Cooldown-Setting.Type");
+        String cooldownTypeS = plugin.getConfig().getString("VanillaFood-Settings.Cooldown.Type");
         if (cooldownTypeS != null) {
             try {
                 this.coolDownType = CoolDownType.valueOf(cooldownTypeS.toUpperCase());
             } catch (IllegalArgumentException e) {
                 this.coolDownType = CoolDownType.DISABLE;
-                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid CoolDown Type=====");
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====Invalid CoolDown Type=====");
                 Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid: " + cooldownTypeS);
                 Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Default value of 'disable' is used");
             }
         }
-        this.globalCoolDown = plugin.getConfig().getDouble("VanillaFood-Settings.Cooldown-Setting.Global-Cooldown", 0);
+        this.globalCoolDown = plugin.getConfig().getDouble("VanillaFood-Settings.Cooldown.Global-Cooldown", 0);
     }
 
     public void loadVanillaFood() {
         ConfigurationSection section = vanillaFoodData.getConfig().getConfigurationSection("Food");
+        int count = 0;
         if (section != null) {
-            int count = 0;
             FileConfiguration config = vanillaFoodData.getConfig();
             Set<String> keys = section.getKeys(false);
+            Food.Options[] foodOptions = Food.Options.values();
             for (String key : keys) {
-                try {
-                    VanillaFood.Type vanillaFoodType = VanillaFood.Type.valueOf(key.toUpperCase());
-                    Material material = Material.getMaterial(key.toUpperCase());
-                    VanillaFood vanillaFood = vanillaFoodMap.getOrDefault(material, new VanillaFood(material));
-                    String path = "Food." + key;
-                    vanillaFood.addOption(Food.Options.FOOD_LEVEL, config.getInt(path + ".FoodLevel", vanillaFoodType.getBaseFoodLevel()));
-                    vanillaFood.addOption(Food.Options.SATURATION, (float) config.getDouble(path + ".Saturation", vanillaFoodType.getBaseSaturation()));
-                    vanillaFood.addOption(Food.Options.COOLDOWN, config.getDouble(path + ".CoolDown", (Double) Food.Options.COOLDOWN.getBaseValue()));
-                    vanillaFood.addOption(Food.Options.INSTANT_EAT, config.getBoolean(path + ".InstantEat", (Boolean) Food.Options.INSTANT_EAT.getBaseValue()));
-
-                    List<String> potionEffectList = config.getStringList(path + ".PotionEffect");
-                    potionEffectList.forEach(format -> {
-                        try {
-                            String[] split = format.split(":");
-                            PotionEffectType potionEffectType = PotionEffectType.getByName(split[0].toUpperCase());
-                            if (potionEffectType != null) {
-                                int level = Integer.parseInt(split[1]);
-                                int duration = Integer.parseInt(split[2]);
-                                double chance = Double.parseDouble(split[3]);
-                                PotionEffect potionEffect = new PotionEffect(potionEffectType, duration, level);
-                                FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffect, chance);
-                                vanillaFood.addPotionEffect(foodPotionEffect);
-                            } else {
-                                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown PotionEffectType=====");
-                                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "PotionEffectType: " + split[0]);
-                            }
-                        } catch (NullPointerException | PatternSyntaxException | ArrayIndexOutOfBoundsException e) {
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid PotionEffect Format=====");
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <potionType>:<level>:<duration>:<chance>");
-                        }
-                    });
-
-                    List<String> commandList = config.getStringList(path + ".Command");
-                    commandList.forEach(format -> {
-                        try {
-                            String[] split = format.split(":");
-                            FoodCommand.ExecuteType executeType = FoodCommand.ExecuteType.valueOf(split[0].toUpperCase());
-                            String command = split[1];
-                            FoodCommand foodCommand = new FoodCommand(command, executeType);
-                            vanillaFood.addCommand(foodCommand);
-                        } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Command Format=====");
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <command>:<args>");
-                        }
-                    });
-
-                    vanillaFoodMap.put(material, vanillaFood);
-                    count++;
-                } catch (IllegalArgumentException e) {
+                Material material = Material.getMaterial(key.toUpperCase());
+                if (material == null) {
                     Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "(VanillaFood) Invalid Material: " + key);
+                    continue;
                 }
+                VanillaFood vanillaFood = vanillaFoodMap.getOrDefault(material, new VanillaFood(material));
+                String path = "Food." + key;
+                for (Food.Options option : foodOptions) {
+                    if (option == Food.Options.MATERIAL) {
+                        continue;
+                    }
+                    if (!option.isCustomFoodOption()) {
+                        String p = path + "." + option.getPath();
+                        if (config.contains(p)) {
+                            vanillaFood.setOption(option, config.get(p, option.getBaseValue()));
+                        }
+                    }
+                }
+
+                vanillaFood.removeAllPotionEffects();
+                List<String> potionEffectList = config.getStringList(path + ".PotionEffect");
+                potionEffectList.forEach(format -> {
+                    try {
+                        String[] split = format.split(":");
+                        PotionEffectType potionEffectType = PotionEffectType.getByName(split[0].toUpperCase());
+                        if (potionEffectType != null) {
+                            int level = Integer.parseInt(split[1]);
+                            int duration = Integer.parseInt(split[2]);
+                            double chance = Double.parseDouble(split[3]);
+                            PotionEffect potionEffect = new PotionEffect(potionEffectType, duration, level);
+                            FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffect, chance);
+                            vanillaFood.addPotionEffect(foodPotionEffect);
+                        } else {
+                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown PotionEffectType=====");
+                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
+                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "PotionEffectType: " + split[0]);
+                        }
+                    } catch (NullPointerException | PatternSyntaxException | ArrayIndexOutOfBoundsException e) {
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid PotionEffect Format=====");
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <potionType>:<level>:<duration>:<chance>");
+                    }
+                });
+
+                vanillaFood.removeAllCommands();
+                List<String> commandList = config.getStringList(path + ".Command");
+                commandList.forEach(format -> {
+                    try {
+                        String[] split = format.split(":");
+                        FoodCommand.ExecuteType executeType = FoodCommand.ExecuteType.valueOf(split[0].toUpperCase());
+                        String command = split[1];
+                        FoodCommand foodCommand = new FoodCommand(command, executeType);
+                        vanillaFood.addCommand(foodCommand);
+                    } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Command Format=====");
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <executeType>:<command>");
+                    }
+                });
+
+                vanillaFoodMap.put(material, vanillaFood);
+                count++;
             }
-            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + count + " VanillaFood loaded");
         }
+        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + count + " VanillaFood loaded");
     }
 
-    public void saveVanillaFoodData() {
+    public void saveVanillaFood() {
         int count = 0;
         FileConfiguration config = vanillaFoodData.getConfig();
         for (Material material : vanillaFoodMap.keySet()) {
             String path = "Food." + material.name().toUpperCase();
             VanillaFood vanillaFood = vanillaFoodMap.get(material);
 
-            config.set(path + "FoodLevel", vanillaFood.getOptionValue(Food.Options.FOOD_LEVEL));
-            config.set(path + "Saturation", vanillaFood.getOptionValue(Food.Options.SATURATION));
-            config.set(path + "CoolDown", vanillaFood.getOptionValue(Food.Options.COOLDOWN));
-            config.set(path + "InstantEat", vanillaFood.getOptionValue(Food.Options.INSTANT_EAT));
+            for (Food.Options options : vanillaFood.getOptions()) {
+                config.set(path + "." + options.getPath(),  vanillaFood.getOptionValue(options));
+            }
 
             List<String> potionEffectList = new ArrayList<>();
             vanillaFood.getPotionEffects().forEach(potionEffect -> potionEffectList.add(potionEffect.toFormat()));
@@ -204,6 +212,14 @@ public class VanillaFoodManager {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),command);
             }
         });
+
+        Material material = (Material) vanillaFood.getOptionValue(Food.Options.MATERIAL);
+        VanillaFood.Type vanillaType = VanillaFood.Type.valueOf(material.name().toUpperCase());
+        if (vanillaType.isBottle()) {
+            player.getInventory().addItem(new ItemStack(Material.GLASS_BOTTLE));
+        } else if (vanillaType.isBowl()) {
+            player.getInventory().addItem(new ItemStack(Material.BOWL));
+        }
 
         if (hand == EquipmentSlot.HAND) {
             ItemStack handStack = player.getInventory().getItemInMainHand();
