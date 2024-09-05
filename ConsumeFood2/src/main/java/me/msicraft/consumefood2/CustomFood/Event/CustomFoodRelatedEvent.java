@@ -47,13 +47,13 @@ public class CustomFoodRelatedEvent implements Listener {
             CustomFood customFood = customFoodManager.getCustomFood(internalName);
             if (customFood != null) {
                 if (plugin.isUseFoodComponentFunction()) {
-                    customFoodConsume(player, itemStack, customFood, null, true);
+                    customFoodConsume(player, customFood, null, true);
                     customFoodManager.applyExecuteCommands(player, customFood);
                     return;
                 }
                 e.setCancelled(true);
                 EquipmentSlot hand = PlayerUtil.getUseHand(player, itemStack);
-                customFoodConsume(player, itemStack, customFood, hand, false);
+                customFoodConsume(player, customFood, hand, false);
             }
         }
     }
@@ -71,7 +71,7 @@ public class CustomFoodRelatedEvent implements Listener {
                         boolean instantEat = (Boolean) customFood.getOptionValue(Food.Options.INSTANT_EAT);
                         if (instantEat) {
                             e.setCancelled(true);
-                            customFoodConsume(player, itemStack, customFood, e.getHand(), false);
+                            customFoodConsume(player, customFood, e.getHand(), false);
                         }
                     }
                 }
@@ -79,7 +79,7 @@ public class CustomFoodRelatedEvent implements Listener {
         }
     }
 
-    private void customFoodConsume(Player player, ItemStack itemStack, CustomFood customFood, EquipmentSlot hand, boolean useFoodComponent) {
+    private void customFoodConsume(Player player, CustomFood customFood, EquipmentSlot hand, boolean useFoodComponent) {
         CoolDownType coolDownType = customFoodManager.getCoolDownType();
         UUID playerUUID = player.getUniqueId();
         long time = System.currentTimeMillis();
