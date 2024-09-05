@@ -37,7 +37,7 @@ public class VanillaFoodRelatedEvent implements Listener {
     public void vanillaFoodConsumeEvent(PlayerItemConsumeEvent e) {
         Player player = e.getPlayer();
         ItemStack itemStack = e.getItem();
-        if (vanillaFoodManager.isVanillaFood(itemStack)) {
+        if (vanillaFoodManager.isVanillaFood(itemStack) && !plugin.getCustomFoodManager().isCustomFood(itemStack)) {
             VanillaFood vanillaFood = vanillaFoodManager.getVanillaFood(itemStack.getType());
             if (vanillaFood != null) {
                 e.setCancelled(true);
@@ -53,7 +53,7 @@ public class VanillaFoodRelatedEvent implements Listener {
         ItemStack itemStack = e.getItem();
         if (itemStack != null) {
             if (e.getAction() == Action.RIGHT_CLICK_AIR) {
-                if (vanillaFoodManager.isVanillaFood(itemStack)) {
+                if (vanillaFoodManager.isVanillaFood(itemStack) && !plugin.getCustomFoodManager().isCustomFood(itemStack)) {
                     VanillaFood vanillaFood = vanillaFoodManager.getVanillaFood(itemStack.getType());
                     if (vanillaFood != null) {
                         boolean instantEat = (Boolean) vanillaFood.getOptionValue(Food.Options.INSTANT_EAT);

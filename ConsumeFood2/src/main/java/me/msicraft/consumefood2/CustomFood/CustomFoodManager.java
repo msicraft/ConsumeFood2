@@ -2,11 +2,9 @@ package me.msicraft.consumefood2.CustomFood;
 
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.CoolDownType;
-import me.msicraft.API.Food.CustomFood;
-import me.msicraft.API.Food.Food;
-import me.msicraft.API.Food.FoodCommand;
-import me.msicraft.API.Food.FoodPotionEffect;
+import me.msicraft.API.Food.*;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.CustomFood.File.CustomFoodData;
 import me.msicraft.consumefood2.Utils.MessageUtil;
@@ -15,6 +13,8 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -211,6 +211,19 @@ public class CustomFoodManager {
         return false;
     }
 
+    public String getInternalName(ItemStack itemStack) {
+        if (itemStack != null && itemStack.getType() != Material.AIR) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+                if (dataContainer.has(customFoodKey, PersistentDataType.STRING)) {
+                    return dataContainer.get(customFoodKey, PersistentDataType.STRING);
+                }
+            }
+        }
+        return null;
+    }
+
     public CustomFood getCustomFood(String internalName) {
         return customFoodMap.getOrDefault(internalName, null);
     }
@@ -280,6 +293,75 @@ public class CustomFoodManager {
             itemStack.setItemMeta(potionMeta);
         }
         return itemStack;
+    }
+
+    public void consumeCustomFood(Player player, CustomFood customFood, EquipmentSlot hand) {
+        applyFoodLevelAndSaturation(player, customFood);
+        applyPotionEffects(player, customFood);
+        applyExecuteCommands(player, customFood);
+
+        Material material = (Material) customFood.getOptionValue(Food.Options.MATERIAL);
+        try {
+            VanillaFood.Type vanillaType = VanillaFood.Type.valueOf(material.name().toUpperCase());
+            if (vanillaType.isBottle()) {
+                player.getInventory().addItem(new ItemStack(Material.GLASS_BOTTLE));
+            } else if (vanillaType.isBowl()) {
+                player.getInventory().addItem(new ItemStack(Material.BOWL));
+            }
+        } catch (IllegalArgumentException ignored) {}
+
+        if (hand == EquipmentSlot.HAND) {
+            ItemStack handStack = player.getInventory().getItemInMainHand();
+            handStack.setAmount(handStack.getAmount() - 1);
+        } else if (hand == EquipmentSlot.OFF_HAND) {
+            ItemStack handStack = player.getInventory().getItemInOffHand();
+            handStack.setAmount(handStack.getAmount() - 1);
+        }
+    }
+
+    public void applyFoodLevelAndSaturation(Player player, CustomFood customFood) {
+        int foodLevel = (int) customFood.getOptionValue(Food.Options.FOOD_LEVEL);
+        float saturation = (float) customFood.getOptionValue(Food.Options.SATURATION);
+
+        int calFoodLevel = player.getFoodLevel() + foodLevel;
+        if (calFoodLevel > 20) {
+            calFoodLevel = 20;
+        }
+        player.setFoodLevel(calFoodLevel);
+
+        float calSaturation = player.getSaturation() + saturation;
+        if (calSaturation > calFoodLevel) {
+            calSaturation = calFoodLevel;
+        }
+        player.setSaturation(calSaturation);
+    }
+
+    public void applyPotionEffects(Player player, CustomFood customFood) {
+        customFood.getPotionEffects().forEach(foodPotionEffect -> {
+            if (Math.random() <= foodPotionEffect.getChance()) {
+                player.addPotionEffect(foodPotionEffect.getPotionEffect());
+            }
+        });
+    }
+
+    public void applyExecuteCommands(Player player, CustomFood customFood) {
+        final boolean usePlaceHolderAPI = plugin.isUsePlaceHolderAPI();
+        customFood.getCommands().forEach(foodCommand -> {
+            String command = foodCommand.getCommand();
+            if (usePlaceHolderAPI) {
+                command = PlaceholderAPI.setPlaceholders(player, command);
+            } else {
+                command = command.replaceAll("%player_name%", player.getName());
+            }
+            FoodCommand.ExecuteType executeType = foodCommand.getExecuteType();
+            switch (executeType) {
+                case PLAYER:
+                    Bukkit.dispatchCommand(player, command);
+                    break;
+                case CONSOLE:
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),command);
+            }
+        });
     }
 
     public CustomFoodData getCustomFoodData() {
