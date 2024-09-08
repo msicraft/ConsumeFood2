@@ -1,18 +1,29 @@
 package me.msicraft.API.Food;
 
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class FoodPotionEffect {
 
     private final PotionEffect potionEffect;
     private final double chance;
 
-    public FoodPotionEffect(PotionEffect potionEffect, double chance) {
-        this.potionEffect = potionEffect;
+    private final int originalLevel;
+    private final int originalDuration;
+
+    public FoodPotionEffect(PotionEffectType potionEffectType, int level, int duration, double chance) {
+        this.originalLevel = level;
+        this.originalDuration = duration;
+        level = level - 1;
+        if (level < 0) {
+            level = 0;
+        }
+        this.potionEffect = new PotionEffect(potionEffectType, duration, level);
         this.chance = chance;
     }
 
-    public FoodPotionEffect(PotionEffect potionEffect, int chance) {
+    /*
+    private FoodPotionEffect(PotionEffect potionEffect, int chance) {
         double temp;
         this.potionEffect = potionEffect;
         temp = chance / 100.0;
@@ -22,6 +33,8 @@ public class FoodPotionEffect {
         this.chance = temp;
     }
 
+     */
+
     public double getChance() {
         return chance;
     }
@@ -30,8 +43,16 @@ public class FoodPotionEffect {
         return potionEffect;
     }
 
+    public int getOriginalLevel() {
+        return originalLevel;
+    }
+
+    public int getOriginalDuration() {
+        return originalDuration;
+    }
+
     public String toFormat() {
-        return potionEffect.getType().getName() + ":" + potionEffect.getAmplifier() + ":" + potionEffect.getDuration() + ":" + chance;
+        return potionEffect.getType().getName() + ":" + originalLevel + ":" + originalDuration + ":" + chance;
     }
 
 }

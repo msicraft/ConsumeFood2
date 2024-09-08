@@ -68,7 +68,7 @@ public class CustomFoodRelatedEvent implements Listener {
                 if (internalName != null) {
                     CustomFood customFood = customFoodManager.getCustomFood(internalName);
                     if (customFood != null) {
-                        boolean instantEat = (Boolean) customFood.getOptionValue(Food.Options.INSTANT_EAT);
+                        boolean instantEat = (boolean) customFood.getOptionValue(Food.Options.INSTANT_EAT);
                         if (instantEat) {
                             e.setCancelled(true);
                             customFoodConsume(player, customFood, e.getHand(), false);
@@ -126,7 +126,7 @@ public class CustomFoodRelatedEvent implements Listener {
             if (internalName != null) {
                 CustomFood customFood = customFoodManager.getCustomFood(internalName);
                 if (customFood != null) {
-                    if ((Boolean) customFood.getOptionValue(Food.Options.DISABLE_CRAFTING)) {
+                    if ((boolean) customFood.getOptionValue(Food.Options.DISABLE_CRAFTING)) {
                         e.getInventory().setResult(null);
                     }
                 }
@@ -141,7 +141,7 @@ public class CustomFoodRelatedEvent implements Listener {
         if (internalName != null) {
             CustomFood customFood = customFoodManager.getCustomFood(internalName);
             if (customFood != null) {
-                if ((Boolean) customFood.getOptionValue(Food.Options.DISABLE_SMELTING)) {
+                if ((boolean) customFood.getOptionValue(Food.Options.DISABLE_SMELTING)) {
                     e.setCancelled(true);
                 }
             }
@@ -155,7 +155,7 @@ public class CustomFoodRelatedEvent implements Listener {
         if (internalName != null) {
             CustomFood customFood = customFoodManager.getCustomFood(internalName);
             if (customFood != null) {
-                if ((Boolean) customFood.getOptionValue(Food.Options.DISABLE_SMELTING)) {
+                if ((boolean) customFood.getOptionValue(Food.Options.DISABLE_SMELTING)) {
                     e.setCancelled(true);
                 }
             }
@@ -170,7 +170,7 @@ public class CustomFoodRelatedEvent implements Listener {
             if (internalName != null) {
                 CustomFood customFood = customFoodManager.getCustomFood(internalName);
                 if (customFood != null) {
-                    if ((Boolean) customFood.getOptionValue(Food.Options.DISABLE_ANVIL)) {
+                    if ((boolean) customFood.getOptionValue(Food.Options.DISABLE_ANVIL)) {
                         e.setResult(null);
                     }
                 }
@@ -186,7 +186,7 @@ public class CustomFoodRelatedEvent implements Listener {
             if (internalName != null) {
                 CustomFood customFood = customFoodManager.getCustomFood(internalName);
                 if (customFood != null) {
-                    if ((Boolean) customFood.getOptionValue(Food.Options.DISABLE_ENCHANT)) {
+                    if ((boolean) customFood.getOptionValue(Food.Options.DISABLE_ENCHANT)) {
                         e.setCancelled(true);
                     }
                 }

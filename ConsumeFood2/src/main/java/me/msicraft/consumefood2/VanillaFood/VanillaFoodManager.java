@@ -16,7 +16,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
@@ -39,10 +38,10 @@ public class VanillaFoodManager {
     }
 
     private final Map<Material, VanillaFood> vanillaFoodMap = new HashMap<>();
+    private final List<Material> vanillaFoodMaterials = new ArrayList<>();
 
     public void reloadVariables() {
-        saveVanillaFood();
-        loadVanillaFood();
+        vanillaFoodData.reloadConfig();
 
         String cooldownTypeS = plugin.getConfig().getString("VanillaFood-Settings.Cooldown.Type");
         if (cooldownTypeS != null) {
@@ -56,22 +55,31 @@ public class VanillaFoodManager {
             }
         }
         this.globalCoolDown = plugin.getConfig().getDouble("VanillaFood-Settings.Cooldown.Global-Cooldown", 0);
+
+        loadVanillaFood();
     }
 
     public void loadVanillaFood() {
-        ConfigurationSection section = vanillaFoodData.getConfig().getConfigurationSection("Food");
+        FileConfiguration config = vanillaFoodData.getConfig();
+        ConfigurationSection section = config.getConfigurationSection("Food");
         int count = 0;
         if (section != null) {
-            FileConfiguration config = vanillaFoodData.getConfig();
+            vanillaFoodMaterials.clear();
             Set<String> keys = section.getKeys(false);
             Food.Options[] foodOptions = Food.Options.values();
             for (String key : keys) {
                 Material material = Material.getMaterial(key.toUpperCase());
                 if (material == null) {
-                    Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "(VanillaFood) Invalid Material: " + key);
+                    Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown VanillaFood Material=====");
+                    Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid Material: " + key);
                     continue;
                 }
-                VanillaFood vanillaFood = vanillaFoodMap.getOrDefault(material, new VanillaFood(material));
+                VanillaFood vanillaFood;
+                if (vanillaFoodMap.containsKey(material)) {
+                    vanillaFood = vanillaFoodMap.get(material);
+                } else {
+                    vanillaFood = new VanillaFood(material);
+                }
                 String path = "Food." + key;
                 for (Food.Options option : foodOptions) {
                     if (option == Food.Options.MATERIAL) {
@@ -85,7 +93,7 @@ public class VanillaFoodManager {
                     }
                 }
 
-                vanillaFood.removeAllPotionEffects();
+                vanillaFood.getPotionEffects().clear();
                 List<String> potionEffectList = config.getStringList(path + ".PotionEffect");
                 potionEffectList.forEach(format -> {
                     try {
@@ -95,8 +103,7 @@ public class VanillaFoodManager {
                             int level = Integer.parseInt(split[1]);
                             int duration = Integer.parseInt(split[2]);
                             double chance = Double.parseDouble(split[3]);
-                            PotionEffect potionEffect = new PotionEffect(potionEffectType, duration, level);
-                            FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffect, chance);
+                            FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffectType, level, duration, chance);
                             vanillaFood.addPotionEffect(foodPotionEffect);
                         } else {
                             Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown PotionEffectType=====");
@@ -111,7 +118,7 @@ public class VanillaFoodManager {
                     }
                 });
 
-                vanillaFood.removeAllCommands();
+                vanillaFood.getCommands().clear();
                 List<String> commandList = config.getStringList(path + ".Command");
                 commandList.forEach(format -> {
                     try {
@@ -129,6 +136,8 @@ public class VanillaFoodManager {
                 });
 
                 vanillaFoodMap.put(material, vanillaFood);
+                vanillaFoodMaterials.add(material);
+
                 count++;
             }
         }
@@ -143,16 +152,28 @@ public class VanillaFoodManager {
             VanillaFood vanillaFood = vanillaFoodMap.get(material);
 
             for (Food.Options options : vanillaFood.getOptions()) {
+                if (options == Food.Options.MATERIAL) {
+                    continue;
+                }
                 config.set(path + "." + options.getPath(),  vanillaFood.getOptionValue(options));
             }
 
             List<String> potionEffectList = new ArrayList<>();
             vanillaFood.getPotionEffects().forEach(potionEffect -> potionEffectList.add(potionEffect.toFormat()));
-            config.set(path + ".PotionEffect", potionEffectList);
+            if (potionEffectList.isEmpty()) {
+                config.set(path + ".PotionEffect", null);
+            } else {
+                config.set(path + ".PotionEffect", potionEffectList);
+            }
 
             List<String> commandList = new ArrayList<>();
             vanillaFood.getCommands().forEach(command -> commandList.add(command.toFormat()));
-            config.set(path + ".Command", commandList);
+            if (commandList.isEmpty()) {
+                config.set(path + ".Command", null);
+            } else {
+                config.set(path + ".Command", commandList);
+            }
+
             count++;
         }
         vanillaFoodData.saveConfig();
@@ -175,7 +196,8 @@ public class VanillaFoodManager {
 
     public void consumeVanillaFood(Player player, VanillaFood vanillaFood, EquipmentSlot hand) {
         int foodLevel = (int) vanillaFood.getOptionValue(Food.Options.FOOD_LEVEL);
-        float saturation = (float) vanillaFood.getOptionValue(Food.Options.SATURATION);
+        double saturationD = (double) vanillaFood.getOptionValue(Food.Options.SATURATION);
+        float saturation = (float) saturationD;
 
         int calFoodLevel = player.getFoodLevel() + foodLevel;
         if (calFoodLevel > 20) {
@@ -236,6 +258,10 @@ public class VanillaFoodManager {
 
     public double getGlobalCoolDown() {
         return globalCoolDown;
+    }
+
+    public List<Material> getVanillaFoodMaterials() {
+        return vanillaFoodMaterials;
     }
 
 }

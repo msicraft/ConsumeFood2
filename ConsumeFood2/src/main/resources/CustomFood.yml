@@ -13,8 +13,8 @@ Food:
     Command:
       - player:help
   test2:
-    Material: player_head
-    DisplayName: "&a test 2 player_head"
+    Material: PLAYER_HEAD
+    DisplayName: "&atest 2 player_head"
     TextureValue: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhhMGJhNzhiODM1ZWM4NDYxNzUwZjdlYjkwYjg4OWRlMDkzMmU4YWI4N2I5YTdhZDc2YzM0M2EzMjI3YzA4MyJ9fX0=
     Lore:
       - '#3081e6test lore 2'
@@ -22,13 +22,13 @@ Food:
     Saturation: 3.6
   test3:
     Material: BREAD
-    DisplayName: "&a test 3"
+    DisplayName: "&atest 3"
     InstantEat: true
     PotionEffect:
       - hunger:2:60:0.75
   test4:
     Material: CARROT
-    DisplayName: "&a test 4"
+    DisplayName: "&atest 4"
     FoodLevel: 4
     AlwaysEat: true
     Command:

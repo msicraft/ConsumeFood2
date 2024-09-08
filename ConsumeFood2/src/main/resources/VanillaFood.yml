@@ -9,97 +9,176 @@ Food:
   BAKED_POTATO:
     FoodLevel: 5
     Saturation: 6
+    InstantEat: false
+    PotionEffect:
+    Command:
   BEEF:
     FoodLevel: 3
     Saturation: 1.8
+    InstantEat: false
+    PotionEffect:
+    Command:
   BEETROOT:
     FoodLevel: 1
     Saturation: 1.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   BEETROOT_SOUP:
     FoodLevel: 6
     Saturation: 7.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   BREAD:
     FoodLevel: 5
     Saturation: 6
+    InstantEat: false
+    PotionEffect:
+    Command:
   CARROT:
     FoodLevel: 3
     Saturation: 3.6
+    InstantEat: false
+    PotionEffect:
+    Command:
   CHICKEN:
     FoodLevel: 2
     Saturation: 2.1
+    InstantEat: false
+    PotionEffect:
+    Command:
   COD:
     FoodLevel: 2
     Saturation: 0.4
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKED_BEEF:
     FoodLevel: 8
     Saturation: 12.8
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKED_CHICKEN:
     FoodLevel: 6
     Saturation: 7.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKED_COD:
     FoodLevel: 5
     Saturation: 6
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKED_MUTTON:
     FoodLevel: 6
     Saturation: 9.6
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKED_PORKCHOP:
     FoodLevel: 8
     Saturation: 12.8
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKED_RABBIT:
     FoodLevel: 5
     Saturation: 6
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKED_SALMON:
     FoodLevel: 6
     Saturation: 9.6
+    InstantEat: false
+    PotionEffect:
+    Command:
   COOKIE:
     FoodLevel: 2
     Saturation: 0.5
+    InstantEat: false
+    PotionEffect:
+    Command:
   DRIED_KELP:
     FoodLevel: 1
     Saturation: 0.6
+    InstantEat: false
+    PotionEffect:
+    Command:
   ENCHANTED_GOLDEN_APPLE:
     FoodLevel: 4
     Saturation: 9.6
+    InstantEat: false
     PotionEffect:
       - ABSORPTION:4:120:1
       - REGENERATION:2:20:1
       - FIRE_RESISTANCE:1:300:1
       - RESISTANCE:1:300:1
+    Command:
   GLOW_BERRIES:
     FoodLevel: 2
     Saturation: 0.4
+    InstantEat: false
+    PotionEffect:
+    Command:
   GOLDEN_APPLE:
     FoodLevel: 4
     Saturation: 9.6
     PotionEffect:
       - ABSORPTION:1:120:1
       - REGENERATION:2:5:1
+    Command:
   GOLDEN_CARROT:
     FoodLevel: 6
     Saturation: 14.4
+    InstantEat: false
+    PotionEffect:
+    Command:
   HONEY_BOTTLE:
     FoodLevel: 6
     Saturation: 1.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   MELON_SLICE:
     FoodLevel: 2
     Saturation: 1.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   MUSHROOM_STEW:
     FoodLevel: 6
     Saturation: 7.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   MUTTON:
     FoodLevel: 2
     Saturation: 1.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   POISONOUS_POTATO:
     FoodLevel: 2
     Saturation: 1.2
     PotionEffect:
       - POISON:2:5:1
+    Command:
   PORKCHOP:
     FoodLevel: 3
     Saturation: 0.6
+    InstantEat: false
+    PotionEffect:
+    Command:
   POTATO:
     FoodLevel: 1
     Saturation: 0.6
+    InstantEat: false
+    PotionEffect:
+    Command:
   PUFFERFISH:
     FoodLevel: 1
     Saturation: 0.2
@@ -107,31 +186,52 @@ Food:
       - HUNGER:3:15:1
       - POISON:2:60:1
       - NAUSEA:1:15:1
+    Command:
   PUMPKIN_PIE:
     FoodLevel: 8
     Saturation: 4.8
+    InstantEat: false
+    PotionEffect:
+    Command:
   RABBIT:
     FoodLevel: 2
     Saturation: 1.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   RABBIT_STEW:
     FoodLevel: 10
     Saturation: 12
+    InstantEat: false
+    PotionEffect:
+    Command:
   ROTTEN_FLESH:
     FoodLevel: 4
     Saturation: 0.8
     PotionEffect:
       - HUNGER:1:30:0.8
+    Command:
   SALMON:
     FoodLevel: 2
     Saturation: 0.2
+    InstantEat: false
+    PotionEffect:
+    Command:
   SPIDER_EYE:
     FoodLevel: 2
     Saturation: 3.2
     PotionEffect:
       - POISON:1:4:1
+    Command:
   SWEET_BERRIES:
     FoodLevel: 1
     Saturation: 0
+    InstantEat: false
+    PotionEffect:
+    Command:
   TROPICAL_FISH:
     FoodLevel: 1
     Saturation: 0.2
+    InstantEat: false
+    PotionEffect:
+    Command:

@@ -21,7 +21,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
@@ -47,10 +46,10 @@ public class CustomFoodManager {
     }
 
     private final Map<String, CustomFood> customFoodMap = new HashMap<>();
+    private final List<String> internalNames = new ArrayList<>();
 
     public void reloadVariables() {
-        saveCustomFood();
-        loadCustomFood();
+        customFoodData.reloadConfig();
 
         String cooldownTypeS = plugin.getConfig().getString("CustomFood-Settings.Cooldown.Type");
         if (cooldownTypeS != null) {
@@ -65,6 +64,8 @@ public class CustomFoodManager {
         }
         this.globalCoolDown = plugin.getConfig().getDouble("CustomFood-Settings.Cooldown.Global-Cooldown", 0);
         this.disablePlayerHeadPlace = plugin.getConfig().getBoolean("CustomFood-Settings.PlayerHead.DisablePlace", true);
+
+        loadCustomFood();
     }
 
     public void loadCustomFood() {
@@ -72,15 +73,25 @@ public class CustomFoodManager {
         ConfigurationSection section = config.getConfigurationSection("Food");
         int count = 0;
         if (section != null) {
+            this.internalNames.clear();
             Set<String> internalNames = section.getKeys(false);
             Food.Options[] foodOptions = Food.Options.values();
             for (String internalName : internalNames) {
                 String path = "Food." + internalName;
-                Material material = Material.getMaterial(path + ".Material");
+                String materialName = config.getString(path + ".Material");
+                if (materialName == null) {
+                    materialName = "APPLE";
+                }
+                Material material = Material.getMaterial(materialName.toUpperCase());
                 if (material == null) {
                     material = Material.APPLE;
                 }
-                CustomFood customFood = customFoodMap.getOrDefault(internalName, new CustomFood(material, internalName));
+                CustomFood customFood;
+                if (customFoodMap.containsKey(internalName)) {
+                    customFood = customFoodMap.get(internalName);
+                } else {
+                    customFood = new CustomFood(material, internalName);
+                }
                 if (material == Material.PLAYER_HEAD) {
                     String textureValue = config.getString(path + ".TextureValue");
                     if (textureValue != null) {
@@ -103,28 +114,33 @@ public class CustomFoodManager {
                         customFood.setOption(options, config.get(p, options.getBaseValue()));
                     }
                 }
+
+                customFood.clearLore();
                 List<String> lore = config.getStringList(path + ".Lore");
                 for (String l : lore) {
                     customFood.addLore(l);
                 }
 
+                customFood.clearEnchant();
                 List<String> enchantFormatList = config.getStringList(path + ".Enchant");
-                for (String format : enchantFormatList) {
-                    try {
-                        String[] a = format.split(":");
-                        String enchantS = a[0];
-                        Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantS));
-                        int level = Integer.parseInt(a[1]);
-                        customFood.addEnchantment(enchantment, level);
-                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Enchant format=====");
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "InternalName: " + internalName);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <enchant>:<level>");
-                    }
+                if (!enchantFormatList.isEmpty()) {
+                    enchantFormatList.forEach(format -> {
+                        try {
+                            String[] a = format.split(":");
+                            String enchantS = a[0];
+                            Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantS));
+                            int level = Integer.parseInt(a[1]);
+                            customFood.addEnchantment(enchantment, level);
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Enchant format=====");
+                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "InternalName: " + internalName);
+                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
+                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <enchant>:<level>");
+                        }
+                    });
                 }
 
-                customFood.removeAllPotionEffects();
+                customFood.getPotionEffects().clear();
                 List<String> potionEffectList = config.getStringList(path + ".PotionEffect");
                 potionEffectList.forEach(format -> {
                     try {
@@ -134,8 +150,7 @@ public class CustomFoodManager {
                             int level = Integer.parseInt(split[1]);
                             int duration = Integer.parseInt(split[2]);
                             double chance = Double.parseDouble(split[3]);
-                            PotionEffect potionEffect = new PotionEffect(potionEffectType, duration, level);
-                            FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffect, chance);
+                            FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffectType, level, duration, chance);
                             customFood.addPotionEffect(foodPotionEffect);
                         } else {
                             Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown PotionEffectType=====");
@@ -150,7 +165,7 @@ public class CustomFoodManager {
                     }
                 });
 
-                customFood.removeAllCommands();
+                customFood.getCommands().clear();
                 List<String> commandList = config.getStringList(path + ".Command");
                 commandList.forEach(format -> {
                     try {
@@ -166,6 +181,11 @@ public class CustomFoodManager {
                         Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <executeType>:<command>");
                     }
                 });
+
+                customFoodMap.put(internalName, customFood);
+                this.internalNames.add(internalName);
+
+                count++;
             }
         }
         Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + count + " CustomFood loaded");
@@ -180,20 +200,51 @@ public class CustomFoodManager {
             CustomFood customFood = customFoodMap.get(internalName);
             Set<Food.Options> optionsSet = customFood.getOptions();
             for (Food.Options options : optionsSet) {
+                if (options == Food.Options.LORE || options == Food.Options.ENCHANT) {
+                    continue;
+                }
                 String p = path + "." + options.getPath();
+                if (options == Food.Options.MATERIAL) {
+                    Material material = customFood.getMaterial();
+                    config.set(p, material.name());
+                    continue;
+                } else if (options == Food.Options.UUID) {
+                    config.set(p, customFood.getOptionValue(options).toString());
+                    continue;
+                }
                 config.set(p, customFood.getOptionValue(options));
             }
 
-            config.set(path + ".Lore", customFood.getLore());
-            config.set(path + ".Enchant", customFood.getEnchantFormatList());
+            List<String> lore = customFood.getLore();
+            if (lore.isEmpty()) {
+                config.set(path + ".Lore", null);
+            } else {
+                config.set(path + ".Lore", lore);
+            }
+
+            List<String> enchantFormatList = customFood.getEnchantFormatList();
+            if (enchantFormatList.isEmpty()) {
+                config.set(path + ".Enchant", null);
+            } else {
+                config.set(path + ".Enchant", enchantFormatList);
+            }
 
             List<String> potionEffectList = new ArrayList<>();
             customFood.getPotionEffects().forEach(potionEffect -> potionEffectList.add(potionEffect.toFormat()));
-            config.set(path + ".PotionEffect", potionEffectList);
+            if (potionEffectList.isEmpty()) {
+                config.set(path + ".PotionEffect", null);
+            } else {
+                config.set(path + ".PotionEffect", potionEffectList);
+            }
 
             List<String> commandList = new ArrayList<>();
             customFood.getCommands().forEach(command -> commandList.add(command.toFormat()));
-            config.set(path + ".Command", commandList);
+            if (commandList.isEmpty()) {
+                config.set(path + ".Command", null);
+            } else {
+                config.set(path + ".Command", commandList);
+            }
+
             count++;
         }
         customFoodData.saveConfig();
@@ -321,7 +372,8 @@ public class CustomFoodManager {
 
     public void applyFoodLevelAndSaturation(Player player, CustomFood customFood) {
         int foodLevel = (int) customFood.getOptionValue(Food.Options.FOOD_LEVEL);
-        float saturation = (float) customFood.getOptionValue(Food.Options.SATURATION);
+        double saturationD = (double) customFood.getOptionValue(Food.Options.SATURATION);
+        float saturation = (float) saturationD;
 
         int calFoodLevel = player.getFoodLevel() + foodLevel;
         if (calFoodLevel > 20) {
@@ -382,6 +434,10 @@ public class CustomFoodManager {
 
     public NamespacedKey getCustomFoodKey() {
         return customFoodKey;
+    }
+
+    public List<String> getInternalNames() {
+        return internalNames;
     }
 
 }

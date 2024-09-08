@@ -56,7 +56,7 @@ public class VanillaFoodRelatedEvent implements Listener {
                 if (vanillaFoodManager.isVanillaFood(itemStack) && !plugin.getCustomFoodManager().isCustomFood(itemStack)) {
                     VanillaFood vanillaFood = vanillaFoodManager.getVanillaFood(itemStack.getType());
                     if (vanillaFood != null) {
-                        boolean instantEat = (Boolean) vanillaFood.getOptionValue(Food.Options.INSTANT_EAT);
+                        boolean instantEat = (boolean) vanillaFood.getOptionValue(Food.Options.INSTANT_EAT);
                         if (instantEat) {
                             e.setCancelled(true);
                             vanillaFoodConsume(player, itemStack, vanillaFood, e.getHand());

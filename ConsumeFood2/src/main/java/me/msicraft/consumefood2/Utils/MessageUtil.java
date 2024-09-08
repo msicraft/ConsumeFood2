@@ -1,5 +1,6 @@
 package me.msicraft.consumefood2.Utils;
 
+import me.msicraft.consumefood2.ConsumeFood2;
 import org.bukkit.ChatColor;
 
 import java.util.regex.Matcher;
@@ -21,6 +22,17 @@ public class MessageUtil {
             matcher = HEX_PATTERN.matcher(message);
         }
         return message;
+    }
+
+    public static String getMessages(String path, boolean applyColorCodes) {
+        if (!applyColorCodes) {
+            return ConsumeFood2.getPlugin().getMessageData().getConfig().getString(path, null);
+        }
+        String message = ConsumeFood2.getPlugin().getMessageData().getConfig().getString(path, null);
+        if (message != null) {
+            return translateColorCodes(message);
+        }
+        return null;
     }
 
 }

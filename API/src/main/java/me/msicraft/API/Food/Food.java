@@ -1,8 +1,6 @@
 package me.msicraft.API.Food;
 
 import org.bukkit.Material;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -16,7 +14,7 @@ public class Food {
         CUSTOM_MODEL_DATA(true, "Custom Model Data", -1, "CustomModelData"),
         LORE(true, "Lore", null, "Lore"),
         FOOD_LEVEL(false, "Food Level", 0, "FoodLevel"),
-        SATURATION(false, "Saturation", 0.0F, "Saturation"),
+        SATURATION(false, "Saturation", 0.0, "Saturation"),
         COOLDOWN(false, "Personal CoolDown", 0.0, "CoolDown"),
         ENCHANT(true, "Enchant", null, "Enchant"),
         HIDE_ENCHANT(true, "Hide Enchant", false, "HideEnchant"),
@@ -76,26 +74,8 @@ public class Food {
         return (Material) optionMap.getOrDefault(Options.MATERIAL, Material.APPLE);
     }
 
-    public void addPotionEffect(PotionEffect potionEffect, double chance) {
-        addPotionEffect(new FoodPotionEffect(potionEffect, chance));
-    }
-
-    public void addPotionEffect(PotionEffectType potionEffectType, int duration, int level, double chance) {
-        addPotionEffect(new PotionEffect(potionEffectType, duration, level), chance);
-    }
-
-    public void addPotionEffect(PotionEffect potionEffect, int chance) {
-        if (chance >= 0 && chance <= 1) {
-            addPotionEffect(potionEffect, (double) chance / 100);
-        }
-    }
-
     public void addPotionEffect(FoodPotionEffect foodPotionEffect) {
         potionEffectList.add(foodPotionEffect);
-    }
-
-    public void removeAllPotionEffects() {
-        potionEffectList.clear();
     }
 
     public List<FoodPotionEffect> getPotionEffects() {
@@ -108,10 +88,6 @@ public class Food {
 
     public void addCommand(String command, FoodCommand.ExecuteType executeType) {
         addCommand(new FoodCommand(command, executeType));
-    }
-
-    public void removeAllCommands() {
-        commandList.clear();
     }
 
     public List<FoodCommand> getCommands() {

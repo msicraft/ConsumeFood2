@@ -1,8 +1,10 @@
 package me.msicraft.consumefood2;
 
 import me.msicraft.consumefood2.Command.MainCommand;
+import me.msicraft.consumefood2.Command.MainTabComplete;
 import me.msicraft.consumefood2.CustomFood.CustomFoodManager;
 import me.msicraft.consumefood2.CustomFood.Event.CustomFoodRelatedEvent;
+import me.msicraft.consumefood2.File.MessageData;
 import me.msicraft.consumefood2.PlayerData.Event.PlayerDataRelatedEvent;
 import me.msicraft.consumefood2.PlayerData.PlayerDataManager;
 import me.msicraft.consumefood2.VanillaFood.Event.VanillaFoodRelatedEvent;
@@ -29,9 +31,11 @@ public final class ConsumeFood2 extends JavaPlugin {
         return plugin;
     }
 
-    public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood 2] ";
+    public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood2] ";
     private boolean usePlaceHolderAPI = false;
     private boolean useFoodComponentFunction = false;
+
+    private MessageData messageData;
 
     private PlayerDataManager playerDataManager;
     private VanillaFoodManager vanillaFoodManager;
@@ -83,6 +87,8 @@ public final class ConsumeFood2 extends JavaPlugin {
              */
         });
 
+        messageData = new MessageData(this);
+
         playerDataManager = new PlayerDataManager(this);
         vanillaFoodManager = new VanillaFoodManager(this);
         customFoodManager = new CustomFoodManager(this);
@@ -101,6 +107,9 @@ public final class ConsumeFood2 extends JavaPlugin {
         commandRegister();
 
         reloadVariables();
+
+        Metrics metrics = new Metrics(this, 23298);
+        getLogger().info("Enabled metrics. You may opt-out by changing plugins/bStats/config.yml");
         getServer().getConsoleSender().sendMessage(PREFIX + "Plugin Enable");
     }
 
@@ -120,10 +129,12 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     private void commandRegister() {
         getServer().getPluginCommand("consumefood2").setExecutor(new MainCommand(this));
+        getServer().getPluginCommand("consumefood2").setTabCompleter(new MainTabComplete(this));
     }
 
     public void reloadVariables() {
         reloadConfig();
+        messageData.reloadConfig();
         vanillaFoodManager.reloadVariables();
         customFoodManager.reloadVariables();
     }
@@ -174,4 +185,7 @@ public final class ConsumeFood2 extends JavaPlugin {
         return customFoodManager;
     }
 
+    public MessageData getMessageData() {
+        return messageData;
+    }
 }

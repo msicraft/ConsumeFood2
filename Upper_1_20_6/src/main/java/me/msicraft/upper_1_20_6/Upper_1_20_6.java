@@ -71,7 +71,8 @@ public class Upper_1_20_6 implements Wrapper {
             foodComponent.setNutrition((int) customFood.getOptionValue(Food.Options.FOOD_LEVEL));
         }
         if (customFood.hasOption(Food.Options.SATURATION)) {
-            foodComponent.setSaturation((float) customFood.getOptionValue(Food.Options.SATURATION));
+            double saturationD = (double) customFood.getOptionValue(Food.Options.SATURATION);
+            foodComponent.setSaturation((float) saturationD);
         }
         if (customFood.hasOption(Food.Options.EAT_SECONDS)) {
             foodComponent.setEatSeconds((int) customFood.getOptionValue(Food.Options.EAT_SECONDS));
