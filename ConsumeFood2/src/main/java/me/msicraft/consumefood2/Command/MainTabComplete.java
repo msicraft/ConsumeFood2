@@ -27,11 +27,17 @@ public class MainTabComplete implements TabCompleter {
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("customfood")) {
                     return List.of("give");
+                } else if (args[0].equalsIgnoreCase("hunger")) {
+                    return List.of("get", "set", "add");
                 }
             }
             if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("customfood") && args[1].equalsIgnoreCase("give")) {
                     return plugin.getCustomFoodManager().getInternalNames();
+                } else if (args[0].equalsIgnoreCase("hunger")) {
+                    if (args[1].equalsIgnoreCase("set") || args[1].equalsIgnoreCase("add")) {
+                        return List.of("<amount>");
+                    }
                 }
             }
             if (args.length == 4) {
