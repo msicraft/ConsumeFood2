@@ -1,0 +1,14 @@
+v1.0 dev-2 {
+
+    Add commands
+    - /consumefood2 foodlevel
+    - /consumefood2 saturation
+
+    Add permissions
+    - consumefood2.command.foodlevel.get
+    - consumefood2.command.foodlevel.set
+    - consumefood2.command.foodlevel.add
+    - consumefood2.command.saturation.get
+    - consumefood2.command.saturation.set
+    - consumefood2.command.saturation.add
+}

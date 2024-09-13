@@ -22,30 +22,35 @@ public class MainTabComplete implements TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (command.getName().equalsIgnoreCase("consumefood2")) {
             if (args.length == 1) {
-                return List.of("reload", "customfood");
+                return List.of("reload", "customfood", "foodlevel", "saturation");
             }
             if (args.length == 2) {
-                if (args[0].equalsIgnoreCase("customfood")) {
+                String var = args[0];
+                if (var.equalsIgnoreCase("customfood")) {
                     return List.of("give");
-                } else if (args[0].equalsIgnoreCase("hunger")) {
+                } else if (var.equalsIgnoreCase("foodlevel") || var.equalsIgnoreCase("saturation")) {
                     return List.of("get", "set", "add");
                 }
             }
             if (args.length == 3) {
-                if (args[0].equalsIgnoreCase("customfood") && args[1].equalsIgnoreCase("give")) {
+                String var = args[0];
+                String var2 = args[1];
+                if (var.equalsIgnoreCase("customfood") && var2.equalsIgnoreCase("give")) {
                     return plugin.getCustomFoodManager().getInternalNames();
-                } else if (args[0].equalsIgnoreCase("hunger")) {
-                    if (args[1].equalsIgnoreCase("set") || args[1].equalsIgnoreCase("add")) {
+                } else if (var.equalsIgnoreCase("foodlevel") || var.equalsIgnoreCase("saturation")) {
+                    if (var2.equalsIgnoreCase("set") || var2.equalsIgnoreCase("add")) {
                         return List.of("<amount>");
                     }
                 }
             }
             if (args.length == 4) {
-                if (args[0].equalsIgnoreCase("customfood") && args[1].equalsIgnoreCase("give")) {
+                String var = args[0];
+                String var2 = args[1];
+                if (var.equalsIgnoreCase("customfood") && var2.equalsIgnoreCase("give")) {
                     return List.of("<amount>");
                 }
             }
         }
-        return List.of();
+        return null;
     }
 }

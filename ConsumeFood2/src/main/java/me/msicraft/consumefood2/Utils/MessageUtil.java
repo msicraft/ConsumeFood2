@@ -2,6 +2,7 @@ package me.msicraft.consumefood2.Utils;
 
 import me.msicraft.consumefood2.ConsumeFood2;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,13 @@ public class MessageUtil {
             return translateColorCodes(message);
         }
         return null;
+    }
+
+    public static void sendMessage(CommandSender sender, String messagePath) {
+        String message = getMessages(messagePath, true);
+        if (message != null && !message.isEmpty()) {
+            sender.sendMessage(message);
+        }
     }
 
 }
