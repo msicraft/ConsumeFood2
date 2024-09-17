@@ -27,7 +27,7 @@ public class MainTabComplete implements TabCompleter {
             if (args.length == 2) {
                 String var = args[0];
                 if (var.equalsIgnoreCase("customfood")) {
-                    return List.of("give");
+                    return List.of("edit", "give", "create", "delete");
                 } else if (var.equalsIgnoreCase("foodlevel") || var.equalsIgnoreCase("saturation")) {
                     return List.of("get", "set", "add");
                 }
@@ -35,8 +35,12 @@ public class MainTabComplete implements TabCompleter {
             if (args.length == 3) {
                 String var = args[0];
                 String var2 = args[1];
-                if (var.equalsIgnoreCase("customfood") && var2.equalsIgnoreCase("give")) {
-                    return plugin.getCustomFoodManager().getInternalNames();
+                if (var.equalsIgnoreCase("customfood")) {
+                    if (var2.equalsIgnoreCase("give") || var2.equalsIgnoreCase("delete")) {
+                        return plugin.getCustomFoodManager().getAllInternalNames();
+                    } else if (var2.equalsIgnoreCase("create")) {
+                        return List.of("<internalname>");
+                    }
                 } else if (var.equalsIgnoreCase("foodlevel") || var.equalsIgnoreCase("saturation")) {
                     if (var2.equalsIgnoreCase("set") || var2.equalsIgnoreCase("add")) {
                         return List.of("<amount>");

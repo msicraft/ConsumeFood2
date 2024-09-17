@@ -2,9 +2,11 @@ package me.msicraft.consumefood2.Command;
 
 import me.msicraft.API.Food.CustomFood;
 import me.msicraft.consumefood2.ConsumeFood2;
+import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
 import me.msicraft.consumefood2.Utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,10 +36,21 @@ public class MainCommand implements CommandExecutor {
                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "Config files reloaded");
                         return true;
                     }
-                    case "customfood" -> { //consumefood2 customfood <give> <internalName> <amount> <targetPlayer>
+                    case "customfood" -> { //consumefood2 customfood <edit, give, create, delete> <internalName> <amount> <targetPlayer>
                         String var2 = args[1];
                         if (var2 != null) {
                             switch (var2) {
+                                case "edit" -> {
+                                    if (!sender.hasPermission("consumefood2.command.customfood.edit")) {
+                                        MessageUtil.sendMessage(sender, "Permission-Error");
+                                        return false;
+                                    }
+                                    if (sender instanceof Player player) {
+                                        plugin.getCustomFoodManager().openCustomFoodEditGui(CustomFoodEditGui.Type.SELECT, player);
+                                        return true;
+                                    }
+                                    return false;
+                                }
                                 case "give" -> {
                                     if (!sender.hasPermission("consumefood2.command.customfood.give")) {
                                         MessageUtil.sendMessage(sender, "Permission-Error");
@@ -68,6 +81,52 @@ public class MainCommand implements CommandExecutor {
                                         return true;
                                     } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 customfood give <internalname> <amount> <targetPlayer>");
+                                        return false;
+                                    }
+                                }
+                                case "create" -> {
+                                    if (!sender.hasPermission("consumefood2.command.customfood.create")) {
+                                        MessageUtil.sendMessage(sender, "Permission-Error");
+                                        return false;
+                                    }
+                                    try {
+                                        String internalName = args[2];
+                                        if (plugin.getCustomFoodManager().getAllInternalNames().contains(internalName)) {
+                                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "This internalname already exists");
+                                            return false;
+                                        }
+                                        CustomFood customFood = new CustomFood(Material.APPLE, internalName);
+                                        String path = "Food." + internalName;
+                                        plugin.getCustomFoodManager().getCustomFoodData().getConfig().set(path + ".Material", "APPLE");
+                                        plugin.getCustomFoodManager().getCustomFoodData().saveConfig();
+                                        plugin.getCustomFoodManager().registerCustomFood(internalName, customFood);
+                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "Created CustomFood");
+                                        return true;
+                                    } catch (ArrayIndexOutOfBoundsException e) {
+                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 customfood create <internalname>");
+                                        return false;
+                                    }
+                                }
+                                case "delete" -> {
+                                    if (!sender.hasPermission("consumefood2.command.customfood.delete")) {
+                                        MessageUtil.sendMessage(sender, "Permission-Error");
+                                        return false;
+                                    }
+                                    try {
+                                        String internalName = args[2];
+                                        if (!plugin.getCustomFoodManager().getAllInternalNames().contains(internalName)) {
+                                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "Internalname does not exist");
+                                            return false;
+                                        }
+                                        String path = "Food." + internalName;
+                                        plugin.getCustomFoodManager().getCustomFoodData().getConfig().set(path, null);
+                                        plugin.getCustomFoodManager().getCustomFoodData().saveConfig();
+                                        plugin.getCustomFoodManager().unregisterCustomFood(internalName);
+                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "CustomFood has been deleted");
+                                        return true;
+                                    } catch (ArrayIndexOutOfBoundsException e) {
+                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 customfood delete <internalname>");
+                                        return false;
                                     }
                                 }
                             }
@@ -94,7 +153,7 @@ public class MainCommand implements CommandExecutor {
                                             }
                                         }
                                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Player: " + target.getName());
-                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "FoodLevel:" + target.getFoodLevel());
+                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "FoodLevel: " + target.getFoodLevel());
                                         return true;
                                     } catch (ArrayIndexOutOfBoundsException e) {
                                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 foodlevel get <targetPlayer>");
@@ -178,7 +237,7 @@ public class MainCommand implements CommandExecutor {
                                             }
                                         }
                                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Player: " + target.getName());
-                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Saturation:" + target.getSaturation());
+                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Saturation: " + target.getSaturation());
                                         return true;
                                     } catch (ArrayIndexOutOfBoundsException e) {
                                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 saturation get <targetPlayer>");

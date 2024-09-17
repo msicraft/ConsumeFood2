@@ -1,8 +1,17 @@
 v1.0 dev-2 {
 
+    - Add CustomFood Edit gui
+
+    Add options
+    - MaxStackSize (+ 1.20.5)
+    - HideAdditionalTooltip (+ 1.20.5)
+
     Add commands
     - /consumefood2 foodlevel
     - /consumefood2 saturation
+    - /consumefood2 customfood edit
+    - /consumefood2 customfood create
+    - /consumefood2 customfood delete
 
     Add permissions
     - consumefood2.command.foodlevel.get
@@ -11,4 +20,7 @@ v1.0 dev-2 {
     - consumefood2.command.saturation.get
     - consumefood2.command.saturation.set
     - consumefood2.command.saturation.add
+    - consumefood2.command.customfood.edit
+    - consumefood2.command.customfood.create
+    - consumefood2.command.customfood.delete
 }

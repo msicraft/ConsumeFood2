@@ -3,11 +3,15 @@ package me.msicraft.consumefood2.CustomFood;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.msicraft.API.ConsumeFood2API;
 import me.msicraft.API.CoolDownType;
+import me.msicraft.API.Data.CustomGui;
 import me.msicraft.API.Food.*;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.CustomFood.File.CustomFoodData;
-import me.msicraft.consumefood2.Utils.MessageUtil;
+import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
+import me.msicraft.consumefood2.PlayerData.Data.PlayerData;
+import me.msicraft.consumefood2.Utils.GuiUtil;
 import me.msicraft.upper_1_20_6.Upper_1_20_6;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,6 +72,13 @@ public class CustomFoodManager {
         loadCustomFood();
     }
 
+    public void openCustomFoodEditGui(CustomFoodEditGui.Type type, Player player) {
+        PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
+        CustomFoodEditGui customFoodEditGui = (CustomFoodEditGui) playerData.getCustomGui(CustomGui.GuiType.CUSTOM_FOOD);
+        player.openInventory(customFoodEditGui.getInventory());
+        customFoodEditGui.setGui(type, player);
+    }
+
     public void loadCustomFood() {
         FileConfiguration config = customFoodData.getConfig();
         ConfigurationSection section = config.getConfigurationSection("Food");
@@ -106,7 +117,7 @@ public class CustomFoodManager {
                 for (Food.Options options : foodOptions) {
                     if (options == Food.Options.MATERIAL || options == Food.Options.TEXTURE_VALUE
                             || options == Food.Options.LORE || options == Food.Options.ENCHANT
-                            || options == Food.Options.UUID) {
+                            || options == Food.Options.UUID || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND) {
                         continue;
                     }
                     String p = path + "." + options.getPath();
@@ -200,7 +211,8 @@ public class CustomFoodManager {
             CustomFood customFood = customFoodMap.get(internalName);
             Set<Food.Options> optionsSet = customFood.getOptions();
             for (Food.Options options : optionsSet) {
-                if (options == Food.Options.LORE || options == Food.Options.ENCHANT) {
+                if (options == Food.Options.LORE || options == Food.Options.ENCHANT
+                        || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND) {
                     continue;
                 }
                 String p = path + "." + options.getPath();
@@ -275,13 +287,30 @@ public class CustomFoodManager {
         return null;
     }
 
+    public boolean hasCustomFood(String internalName) {
+        return customFoodMap.containsKey(internalName);
+    }
+
     public CustomFood getCustomFood(String internalName) {
         return customFoodMap.getOrDefault(internalName, null);
     }
 
+    public void registerCustomFood(String internalName, CustomFood customFood) {
+        customFoodMap.put(internalName, customFood);
+        this.internalNames.add(internalName);
+    }
+
+    public void unregisterCustomFood(String internalName) {
+        customFoodMap.remove(internalName);
+        this.internalNames.remove(internalName);
+    }
+
     public ItemStack createItemStack(CustomFood customFood) {
+        if (customFood == null) {
+            return GuiUtil.AIR_STACK;
+        }
         ItemStack itemStack = new ItemStack((Material) customFood.getOptionValue(Food.Options.MATERIAL));
-        if (plugin.isUseFoodComponentFunction()) {
+        if (plugin.isUpper_1_20_5()) {
             return Upper_1_20_6.getInstance().createCustomFoodItemStack(customFood, Map.of("CustomFood", customFoodKey, "UnStackable", unStackableKey));
         }
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -289,15 +318,17 @@ public class CustomFoodManager {
 
         if (customFood.hasOption(Food.Options.DISPLAYNAME)) {
             String displayName = (String) customFood.getOptionValue(Food.Options.DISPLAYNAME);
-            displayName = MessageUtil.translateColorCodes(displayName);
-            itemMeta.setDisplayName(displayName);
+            if (displayName != null) {
+                displayName = ConsumeFood2API.translateColorCodes(displayName);
+                itemMeta.setDisplayName(displayName);
+            }
         }
         if (customFood.hasOption(Food.Options.CUSTOM_MODEL_DATA)) {
             itemMeta.setCustomModelData((int) customFood.getOptionValue(Food.Options.CUSTOM_MODEL_DATA));
         }
         List<String> lore = new ArrayList<>(customFood.getLore().size());
         for (String s : customFood.getLore()) {
-            s = MessageUtil.translateColorCodes(s);
+            s = ConsumeFood2API.translateColorCodes(s);
             lore.add(s);
         }
         itemMeta.setLore(lore);
@@ -350,6 +381,7 @@ public class CustomFoodManager {
         applyFoodLevelAndSaturation(player, customFood);
         applyPotionEffects(player, customFood);
         applyExecuteCommands(player, customFood);
+        applySound(player, customFood);
 
         Material material = (Material) customFood.getOptionValue(Food.Options.MATERIAL);
         try {
@@ -416,6 +448,13 @@ public class CustomFoodManager {
         });
     }
 
+    public void applySound(Player player, CustomFood customFood) {
+        String soundS = (String) customFood.getOptionValue(Food.Options.SOUND);
+        if (soundS != null) {
+            player.playSound(player.getLocation(), soundS, 1.0F, 1.0F);
+        }
+    }
+
     public CustomFoodData getCustomFoodData() {
         return customFoodData;
     }
@@ -436,7 +475,7 @@ public class CustomFoodManager {
         return customFoodKey;
     }
 
-    public List<String> getInternalNames() {
+    public List<String> getAllInternalNames() {
         return internalNames;
     }
 

@@ -46,8 +46,10 @@ public class Upper_1_20_6 implements Wrapper {
 
         if (customFood.hasOption(Food.Options.DISPLAYNAME)) {
             String displayName = (String) customFood.getOptionValue(Food.Options.DISPLAYNAME);
-            displayName = translateColorCodes(displayName);
-            itemMeta.setDisplayName(displayName);
+            if (displayName != null) {
+                displayName = translateColorCodes(displayName);
+                itemMeta.setDisplayName(displayName);
+            }
         }
         if (customFood.hasOption(Food.Options.CUSTOM_MODEL_DATA)) {
             itemMeta.setCustomModelData((int) customFood.getOptionValue(Food.Options.CUSTOM_MODEL_DATA));
@@ -63,6 +65,9 @@ public class Upper_1_20_6 implements Wrapper {
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         //if ((boolean) customFood.getOptionValue(Food.Options.HIDE_POTION_EFFECT)) {}
+        if ((boolean) customFood.hasOption(Food.Options.HIDE_ADDITIONAL_TOOLTIP)) {
+            itemMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+        }
         if ((boolean) customFood.getOptionValue(Food.Options.UNSTACKABLE)) {
             dataContainer.set(namespacedKeyMap.get("UnStackable"), PersistentDataType.STRING, UUID.randomUUID().toString());
         }
@@ -75,7 +80,10 @@ public class Upper_1_20_6 implements Wrapper {
             foodComponent.setSaturation((float) saturationD);
         }
         if (customFood.hasOption(Food.Options.EAT_SECONDS)) {
-            foodComponent.setEatSeconds((int) customFood.getOptionValue(Food.Options.EAT_SECONDS));
+            double eatSecondsD = (double) customFood.getOptionValue(Food.Options.EAT_SECONDS);
+            if (eatSecondsD > -1) {
+                foodComponent.setEatSeconds((float) eatSecondsD);
+            }
         }
         foodComponent.setCanAlwaysEat((boolean) customFood.getOptionValue(Food.Options.ALWAYS_EAT));
         for (FoodPotionEffect foodPotionEffect : customFood.getPotionEffects()) {
@@ -85,6 +93,9 @@ public class Upper_1_20_6 implements Wrapper {
         dataContainer.set(namespacedKeyMap.get("CustomFood"), PersistentDataType.STRING, customFood.getInternalName());
 
         itemMeta.setFood(foodComponent);
+        if (customFood.hasOption(Food.Options.MAX_STACK_SIZE)) {
+            itemMeta.setMaxStackSize((int) customFood.getOptionValue(Food.Options.MAX_STACK_SIZE));
+        }
         itemStack.setItemMeta(itemMeta);
 
         for (Enchantment enchantment : customFood.getEnchantments()) {

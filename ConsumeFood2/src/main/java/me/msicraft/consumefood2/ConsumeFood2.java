@@ -4,6 +4,7 @@ import me.msicraft.consumefood2.Command.MainCommand;
 import me.msicraft.consumefood2.Command.MainTabComplete;
 import me.msicraft.consumefood2.CustomFood.CustomFoodManager;
 import me.msicraft.consumefood2.CustomFood.Event.CustomFoodRelatedEvent;
+import me.msicraft.consumefood2.CustomFood.Menu.Event.CustomFoodEditEvent;
 import me.msicraft.consumefood2.File.MessageData;
 import me.msicraft.consumefood2.PlayerData.Event.PlayerDataRelatedEvent;
 import me.msicraft.consumefood2.PlayerData.PlayerDataManager;
@@ -33,7 +34,7 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood2] ";
     private boolean usePlaceHolderAPI = false;
-    private boolean useFoodComponentFunction = false;
+    private boolean upper_1_20_5 = false;
 
     private MessageData messageData;
 
@@ -71,7 +72,7 @@ public final class ConsumeFood2 extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Bukkit Version: " + bukkitVersion);
             Set<String> sets = Set.of("1.20.5", "1.20.6", "1.21", "1.21.1");
             if (sets.contains(bukkitVersion)) {
-                useFoodComponentFunction = true;
+                upper_1_20_5 = true;
             }
         }
 
@@ -125,6 +126,7 @@ public final class ConsumeFood2 extends JavaPlugin {
         pluginManager.registerEvents(new PlayerDataRelatedEvent(this), this);
         pluginManager.registerEvents(new VanillaFoodRelatedEvent(this), this);
         pluginManager.registerEvents(new CustomFoodRelatedEvent(this), this);
+        pluginManager.registerEvents(new CustomFoodEditEvent(this), this);
     }
 
     private void commandRegister() {
@@ -165,8 +167,8 @@ public final class ConsumeFood2 extends JavaPlugin {
         //getServer().getConsoleSender().sendMessage(PREFIX + "Plugin replaced the old config.yml with config_old.yml and created a new config.yml");
     }
 
-    public boolean isUseFoodComponentFunction() {
-        return useFoodComponentFunction;
+    public boolean isUpper_1_20_5() {
+        return upper_1_20_5;
     }
 
     public boolean isUsePlaceHolderAPI() {

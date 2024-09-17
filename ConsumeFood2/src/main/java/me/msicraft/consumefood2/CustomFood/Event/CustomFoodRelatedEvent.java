@@ -46,7 +46,7 @@ public class CustomFoodRelatedEvent implements Listener {
         if (internalName != null) {
             CustomFood customFood = customFoodManager.getCustomFood(internalName);
             if (customFood != null) {
-                if (plugin.isUseFoodComponentFunction()) {
+                if (plugin.isUpper_1_20_5()) {
                     customFoodConsume(player, customFood, null, true);
                     customFoodManager.applyExecuteCommands(player, customFood);
                     return;
