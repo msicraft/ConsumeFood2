@@ -1,5 +1,6 @@
 package me.msicraft.consumefood2;
 
+import de.tr7zw.changeme.nbtapi.NBT;
 import me.msicraft.consumefood2.Command.MainCommand;
 import me.msicraft.consumefood2.Command.MainTabComplete;
 import me.msicraft.consumefood2.CustomFood.CustomFoodManager;
@@ -9,6 +10,7 @@ import me.msicraft.consumefood2.File.MessageData;
 import me.msicraft.consumefood2.PlayerData.Event.PlayerDataRelatedEvent;
 import me.msicraft.consumefood2.PlayerData.PlayerDataManager;
 import me.msicraft.consumefood2.VanillaFood.Event.VanillaFoodRelatedEvent;
+import me.msicraft.consumefood2.VanillaFood.Menu.Event.VanillaFoodEditEvent;
 import me.msicraft.consumefood2.VanillaFood.VanillaFoodManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,12 +49,10 @@ public final class ConsumeFood2 extends JavaPlugin {
         plugin = this;
         createConfigFile();
 
-        if (Bukkit.getPluginManager().getPlugin("NBTAPI") == null) {
-            Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.RED + "Requires NBTAPI plugin" + ChatColor.WHITE +" | Download here-> https://www.spigotmc.org/resources/nbt-api.7939/");
-            getServer().getPluginManager().disablePlugin(this);
+        if (!NBT.preloadApi()) {
+            getLogger().warning("NBT-API wasn't initialized properly, disabling the plugin");
+            getPluginLoader().disablePlugin(this);
             return;
-        } else {
-            Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Detect NBTAPI plugin");
         }
 
         if (getConfig().getBoolean("Compatibility.PlaceholderAPI")) {
@@ -127,6 +127,7 @@ public final class ConsumeFood2 extends JavaPlugin {
         pluginManager.registerEvents(new VanillaFoodRelatedEvent(this), this);
         pluginManager.registerEvents(new CustomFoodRelatedEvent(this), this);
         pluginManager.registerEvents(new CustomFoodEditEvent(this), this);
+        pluginManager.registerEvents(new VanillaFoodEditEvent(this), this);
     }
 
     private void commandRegister() {

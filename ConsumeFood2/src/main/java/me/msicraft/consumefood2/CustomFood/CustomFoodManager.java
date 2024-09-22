@@ -1,7 +1,7 @@
 package me.msicraft.consumefood2.CustomFood;
 
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.ConsumeFood2API;
 import me.msicraft.API.CoolDownType;
@@ -77,6 +77,13 @@ public class CustomFoodManager {
         CustomFoodEditGui customFoodEditGui = (CustomFoodEditGui) playerData.getCustomGui(CustomGui.GuiType.CUSTOM_FOOD);
         player.openInventory(customFoodEditGui.getInventory());
         customFoodEditGui.setGui(type, player);
+    }
+
+    public void saveOptionToConfig(CustomFood customFood, Food.Options options) {
+        FileConfiguration config = customFoodData.getConfig();
+        String path = "Food." + customFood.getInternalName() + "." + options.getPath();
+        config.set(path, customFood.getOptionValue(options));
+        customFoodData.saveConfig();
     }
 
     public void loadCustomFood() {
@@ -439,11 +446,12 @@ public class CustomFoodManager {
             }
             FoodCommand.ExecuteType executeType = foodCommand.getExecuteType();
             switch (executeType) {
-                case PLAYER:
+                case PLAYER -> {
                     Bukkit.dispatchCommand(player, command);
-                    break;
-                case CONSOLE:
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),command);
+                }
+                case CONSOLE -> {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                }
             }
         });
     }

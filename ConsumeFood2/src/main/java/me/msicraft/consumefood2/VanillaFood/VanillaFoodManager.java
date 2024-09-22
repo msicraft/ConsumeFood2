@@ -2,12 +2,15 @@ package me.msicraft.consumefood2.VanillaFood;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.CoolDownType;
+import me.msicraft.API.Data.CustomGui;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.FoodCommand;
 import me.msicraft.API.Food.FoodPotionEffect;
 import me.msicraft.API.Food.VanillaFood;
 import me.msicraft.consumefood2.ConsumeFood2;
+import me.msicraft.consumefood2.PlayerData.Data.PlayerData;
 import me.msicraft.consumefood2.VanillaFood.File.VanillaFoodData;
+import me.msicraft.consumefood2.VanillaFood.Menu.VanillaFoodEditGui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -57,6 +60,20 @@ public class VanillaFoodManager {
         this.globalCoolDown = plugin.getConfig().getDouble("VanillaFood-Settings.Cooldown.Global-Cooldown", 0);
 
         loadVanillaFood();
+    }
+
+    public void openVanillaFoodEditGui(VanillaFoodEditGui.Type type, Player player) {
+        PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
+        VanillaFoodEditGui vanillaFoodEditGui = (VanillaFoodEditGui) playerData.getCustomGui(CustomGui.GuiType.VANILLA_FOOD);
+        player.openInventory(vanillaFoodEditGui.getInventory());
+        vanillaFoodEditGui.setGui(type, player);
+    }
+
+    public void saveOptionsToConfig(VanillaFood vanillaFood, Food.Options options) {
+        FileConfiguration config = vanillaFoodData.getConfig();
+        String path = "Food." + vanillaFood.getMaterial().name().toUpperCase() + "." + options.getPath();
+        config.set(path, vanillaFood.getOptionValue(options));
+        vanillaFoodData.saveConfig();
     }
 
     public void loadVanillaFood() {
@@ -227,11 +244,12 @@ public class VanillaFoodManager {
             }
             FoodCommand.ExecuteType executeType = foodCommand.getExecuteType();
             switch (executeType) {
-                case PLAYER:
+                case PLAYER -> {
                     Bukkit.dispatchCommand(player, command);
-                    break;
-                case CONSOLE:
+                }
+                case CONSOLE -> {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),command);
+                }
             }
         });
 

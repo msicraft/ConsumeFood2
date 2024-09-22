@@ -46,21 +46,21 @@ public class CustomFoodEditGui extends CustomGui {
     public void setGui(Type type, Player player) {
         gui.clear();
         switch (type) {
-            case SELECT:
+            case SELECT -> {
                 setSelectGui(player);
-                break;
-            case EDIT:
+            }
+            case EDIT -> {
                 setEditGui(player);
-                break;
+            }
         }
     }
 
     private void setSelectGui(Player player) {
         ItemStack itemStack;
         itemStack = GuiUtil.createItemStack(Material.ARROW, "Next", GuiUtil.EMPTY_LORE, -1, selectKey, "Next");
-        gui.setItem(48, itemStack);
-        itemStack = GuiUtil.createItemStack(Material.ARROW, "Previous", GuiUtil.EMPTY_LORE, -1, selectKey, "Previous");
         gui.setItem(50, itemStack);
+        itemStack = GuiUtil.createItemStack(Material.ARROW, "Previous", GuiUtil.EMPTY_LORE, -1, selectKey, "Previous");
+        gui.setItem(48, itemStack);
 
         CustomFoodManager customFoodManager = plugin.getCustomFoodManager();
         PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
@@ -289,7 +289,6 @@ public class CustomFoodEditGui extends CustomGui {
             gui.setItem(editSlots[count], itemStack);
             count++;
         }
-
     }
 
     public NamespacedKey getSelectKey() {

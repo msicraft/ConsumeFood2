@@ -1,7 +1,7 @@
 package me.msicraft.upper_1_20_6;
 
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.msicraft.API.Food.CustomFood;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.FoodPotionEffect;

@@ -1,10 +1,12 @@
 package me.msicraft.consumefood2.CustomFood.Event;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.Food.CustomFood;
 import me.msicraft.API.Food.Food;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.CustomFood.CustomFoodManager;
+import me.msicraft.consumefood2.Utils.MessageUtil;
 import me.msicraft.consumefood2.Utils.PlayerUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -84,15 +86,22 @@ public class CustomFoodRelatedEvent implements Listener {
         UUID playerUUID = player.getUniqueId();
         long time = System.currentTimeMillis();
         switch (coolDownType) {
-            case DISABLE:
+            case DISABLE -> {
                 if (!useFoodComponent) {
                     customFoodManager.consumeCustomFood(player, customFood, hand);
                 }
-                break;
-            case GLOBAL:
+            }
+            case GLOBAL -> {
                 if (globalCooldownMap.containsKey(playerUUID)) {
                     if (globalCooldownMap.get(playerUUID) > time) {
                         long left = (globalCooldownMap.get(playerUUID) - time) / 1000;
+                        String message = MessageUtil.getMessages("CustomFood-Global-Cooldown-Left", true);
+                        if (message != null && !message.isEmpty()) {
+                            message = message.replaceAll("%customfood_name%", (String) customFood.getOptionValue(Food.Options.DISPLAYNAME));
+                            message = message.replaceAll("%customfood_global_time_left%", String.valueOf(left));
+                            message = PlaceholderAPI.setPlaceholders(player, message);
+                            player.sendMessage(message);
+                        }
                         return;
                     }
                 }
@@ -100,13 +109,20 @@ public class CustomFoodRelatedEvent implements Listener {
                 if (!useFoodComponent) {
                     customFoodManager.consumeCustomFood(player, customFood, hand);
                 }
-                break;
-            case PERSONAL:
+            }
+            case PERSONAL -> {
                 String internalName = customFood.getInternalName();
                 double foodCooldown = (double) customFood.getOptionValue(Food.Options.COOLDOWN);
                 Map<String, Long> temp = personalCooldownMap.getOrDefault(playerUUID, new HashMap<>());
                 if (temp.containsKey(internalName) && temp.get(internalName) > time) {
                     long left = (temp.get(internalName) - time) / 1000;
+                    String message = MessageUtil.getMessages("CustomFood-Personal-Cooldown-Left", true);
+                    if (message != null && !message.isEmpty()) {
+                        message = message.replaceAll("%customfood_name%", (String) customFood.getOptionValue(Food.Options.DISPLAYNAME));
+                        message = message.replaceAll("%customfood_personal_time_left%", String.valueOf(left));
+                        message = PlaceholderAPI.setPlaceholders(player, message);
+                        player.sendMessage(message);
+                    }
                     return;
                 }
                 temp.put(internalName, (long) (time + (foodCooldown * 1000)));
@@ -114,7 +130,7 @@ public class CustomFoodRelatedEvent implements Listener {
                 if (!useFoodComponent) {
                     customFoodManager.consumeCustomFood(player, customFood, hand);
                 }
-                break;
+            }
         }
     }
 

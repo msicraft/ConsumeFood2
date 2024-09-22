@@ -1,7 +1,7 @@
 package me.msicraft.API.Food;
 
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.msicraft.API.ConsumeFood2API;
 import org.bukkit.Color;
 import org.bukkit.Material;

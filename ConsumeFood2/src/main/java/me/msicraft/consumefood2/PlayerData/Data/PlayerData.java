@@ -4,6 +4,7 @@ import me.msicraft.API.Data.CustomGui;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
 import me.msicraft.consumefood2.PlayerData.File.PlayerDataFile;
+import me.msicraft.consumefood2.VanillaFood.Menu.VanillaFoodEditGui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -43,6 +44,10 @@ public class PlayerData {
             switch (guiType) {
                 case CUSTOM_FOOD -> {
                     customGui = new CustomFoodEditGui(ConsumeFood2.getPlugin());
+                    customGuiMap.put(guiType, customGui);
+                }
+                case VANILLA_FOOD -> {
+                    customGui = new VanillaFoodEditGui(ConsumeFood2.getPlugin());
                     customGuiMap.put(guiType, customGui);
                 }
                 default -> {

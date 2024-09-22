@@ -1,1 +1,6 @@
+# PlaceholderAPI is available (ex. %player_name%)
 Permission-Error: "&cYou don't have permission"
+CustomFood-Global-Cooldown-Left: "%customfood_name% Time Left: %customfood_global_time_left%"
+CustomFood-Personal-Cooldown-Left: "%customfood_name% Time Left: %customfood_personal_time_left%"
+VanillaFood-Global-Cooldown-Left: "%vanillafood_name% Time Left: %vanillafood_global_time_left%"
+VanillaFood-Personal-Cooldown-Left: "%vanillafood_name% Time Left: %vanillafood_personal_time_left%"

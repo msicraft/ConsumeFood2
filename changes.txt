@@ -1,6 +1,23 @@
+v1.0 dev-3 {
+
+    - Added VanillaFood edit gui
+    - Added cooldown messages for CustomFood and VanillaFood
+    - Removed dependency on NBTAPI and shaded into plugin
+    - Fixed an issue where options were not saved when changed via GUI
+
+    Add commands
+    - consumefood2 vanillafood edit
+    - consumefood2 vanillafood give
+
+    Add permissions
+    - consumefood2.command.vanillafood.edit
+    - consumefood2.command.vanillafood.give
+
+}
+
 v1.0 dev-2 {
 
-    - Add CustomFood Edit gui
+    - Added CustomFood Edit gui
 
     Add options
     - MaxStackSize (+ 1.20.5)

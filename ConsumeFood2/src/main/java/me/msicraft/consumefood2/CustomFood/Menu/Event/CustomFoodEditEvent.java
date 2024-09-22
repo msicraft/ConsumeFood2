@@ -63,11 +63,13 @@ public class CustomFoodEditEvent implements Listener {
                 });
                 return;
             }
+            boolean save = true;
             switch (options) {
                 case MATERIAL -> {
                     Material material = Material.getMaterial(message.toUpperCase());
                     if (material == null) {
                         player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "Invalid Material: " + message);
+                        save = false;
                     } else {
                         customFood.setOption(Food.Options.MATERIAL, material);
                     }
@@ -96,10 +98,12 @@ public class CustomFoodEditEvent implements Listener {
                             FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffectType, level, duration, chance);
                             customFood.addPotionEffect(foodPotionEffect);
                         } else {
+                            save = false;
                             player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown PotionEffectType=====");
                             player.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "PotionEffectType: " + split[0]);
                         }
                     } catch (NullPointerException | PatternSyntaxException | ArrayIndexOutOfBoundsException ex) {
+                        save = false;
                         player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid PotionEffect Format=====");
                         player.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <potionType>:<level>:<duration>:<chance>");
                     }
@@ -112,6 +116,7 @@ public class CustomFoodEditEvent implements Listener {
                         FoodCommand foodCommand = new FoodCommand(command, executeType);
                         customFood.addCommand(foodCommand);
                     } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ex) {
+                        save = false;
                         player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Command Format=====");
                         player.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <executeType>:<command>");
                     }
@@ -136,6 +141,7 @@ public class CustomFoodEditEvent implements Listener {
                         int level = Integer.parseInt(a[1]);
                         customFood.addEnchantment(enchantment, level);
                     } catch (ArrayIndexOutOfBoundsException | NumberFormatException ex) {
+                        save = false;
                         player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Enchant format=====");
                         player.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <enchant>:<level>");
                     }
@@ -154,6 +160,9 @@ public class CustomFoodEditEvent implements Listener {
                     int maxStackSize = Integer.parseInt(message);
                     customFood.setOption(Food.Options.MAX_STACK_SIZE, maxStackSize);
                 }
+            }
+            if (save) {
+                customFoodManager.saveOptionToConfig(customFood, options);
             }
             playerData.removeTempData("CustomFood_ChatEdit");
             Bukkit.getScheduler().runTask(plugin, () -> {
@@ -344,6 +353,7 @@ public class CustomFoodEditEvent implements Listener {
                                         player.sendMessage(ChatColor.GRAY + "========================================");
                                         player.sendMessage(ChatColor.GRAY + "Please enter the command");
                                         player.sendMessage(ChatColor.GRAY + "Format: <executeType>:<command>");
+                                        player.sendMessage(ChatColor.GRAY + "ExecuteType: [console, player]");
                                         player.sendMessage(ChatColor.GRAY + "Cancel when entering 'cancel'");
                                         player.sendMessage(ChatColor.GRAY + "========================================");
                                         playerData.setTempData("CustomFood_ChatEdit", data);
@@ -412,6 +422,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.HIDE_ENCHANT, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.HIDE_ENCHANT);
                                 }
                                 case DISABLE_CRAFTING -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_CRAFTING);
@@ -420,6 +431,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_CRAFTING, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_CRAFTING);
                                 }
                                 case DISABLE_SMELTING -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_SMELTING);
@@ -428,6 +440,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_SMELTING, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_SMELTING);
                                 }
                                 case DISABLE_ANVIL -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_ANVIL);
@@ -436,6 +449,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_ANVIL, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_ANVIL);
                                 }
                                 case DISABLE_ENCHANT -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_ENCHANT);
@@ -444,6 +458,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_ENCHANT, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_ENCHANT);
                                 }
                                 case SOUND -> {
                                     if (e.isLeftClick()) {
@@ -479,6 +494,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.HIDE_POTION_EFFECT, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.HIDE_POTION_EFFECT);
                                 }
                                 case UNSTACKABLE -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.UNSTACKABLE);
@@ -487,6 +503,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.UNSTACKABLE, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.UNSTACKABLE);
                                 }
                                 case INSTANT_EAT -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.INSTANT_EAT);
@@ -495,6 +512,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.INSTANT_EAT, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.INSTANT_EAT);
                                 }
                                 case ALWAYS_EAT -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.ALWAYS_EAT);
@@ -503,6 +521,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.ALWAYS_EAT, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.ALWAYS_EAT);
                                 }
                                 case EAT_SECONDS -> {
                                     if (e.isLeftClick()) {
@@ -537,6 +556,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.HIDE_ADDITIONAL_TOOLTIP, true);
                                     }
+                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.HIDE_ADDITIONAL_TOOLTIP);
                                 }
                             }
                             if (open) {

@@ -1,9 +1,11 @@
 package me.msicraft.consumefood2.Command;
 
 import me.msicraft.API.Food.CustomFood;
+import me.msicraft.API.Food.VanillaFood;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
 import me.msicraft.consumefood2.Utils.MessageUtil;
+import me.msicraft.consumefood2.VanillaFood.Menu.VanillaFoodEditGui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,6 +37,57 @@ public class MainCommand implements CommandExecutor {
                         plugin.reloadVariables();
                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "Config files reloaded");
                         return true;
+                    }
+                    case "vanillafood" -> { //consumefood2 vanillafood <edit, give> <internalName> <amount> <targetPlayer>
+                        String var2 = args[1];
+                        if (var2 != null) {
+                            switch (var2) {
+                                case "edit" -> {
+                                    if (!sender.hasPermission("consumefood2.command.vanillafood.edit")) {
+                                        MessageUtil.sendMessage(sender, "Permission-Error");
+                                        return false;
+                                    }
+                                    if (sender instanceof Player player) {
+                                        plugin.getVanillaFoodManager().openVanillaFoodEditGui(VanillaFoodEditGui.Type.SELECT, player);
+                                        return true;
+                                    }
+                                    return false;
+                                }
+                                case "give" -> {
+                                    if (!sender.hasPermission("consumefood2.command.vanillafood.give")) {
+                                        MessageUtil.sendMessage(sender, "Permission-error");
+                                        return false;
+                                    }
+                                    try {
+                                        String materialS = args[2];
+                                        int amount = Integer.parseInt(args[3]);
+                                        String targetS = args[4];
+                                        Player target = Bukkit.getPlayer(targetS);
+                                        if (target == null) {
+                                            if (sender instanceof Player p) {
+                                                target = p;
+                                            } else {
+                                                sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "Target not found!");
+                                                return false;
+                                            }
+                                        }
+                                        VanillaFood vanillaFood = plugin.getVanillaFoodManager().getVanillaFood(Material.getMaterial(materialS));
+                                        if (vanillaFood == null) {
+                                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "material does not exist");
+                                            return false;
+                                        }
+                                        ItemStack vanillaFoodStack = new ItemStack(vanillaFood.getMaterial());
+                                        for (int i = 0; i<amount; i++) {
+                                            target.getInventory().addItem(vanillaFoodStack);
+                                        }
+                                        return true;
+                                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                                        sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 vanillafood give <internalname> <amount> <targetPlayer>");
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
                     }
                     case "customfood" -> { //consumefood2 customfood <edit, give, create, delete> <internalName> <amount> <targetPlayer>
                         String var2 = args[1];

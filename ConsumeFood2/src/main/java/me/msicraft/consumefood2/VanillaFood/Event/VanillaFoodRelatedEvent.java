@@ -1,9 +1,11 @@
 package me.msicraft.consumefood2.VanillaFood.Event;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.VanillaFood;
 import me.msicraft.consumefood2.ConsumeFood2;
+import me.msicraft.consumefood2.Utils.MessageUtil;
 import me.msicraft.consumefood2.Utils.PlayerUtil;
 import me.msicraft.consumefood2.VanillaFood.VanillaFoodManager;
 import org.bukkit.Material;
@@ -72,30 +74,44 @@ public class VanillaFoodRelatedEvent implements Listener {
         UUID playerUUID = player.getUniqueId();
         long time = System.currentTimeMillis();
         switch (coolDownType) {
-            case DISABLE:
+            case DISABLE -> {
                 vanillaFoodManager.consumeVanillaFood(player, vanillaFood, hand);
-                break;
-            case GLOBAL:
+            }
+            case GLOBAL -> {
                 if (globalCooldownMap.containsKey(playerUUID)) {
                     if (globalCooldownMap.get(playerUUID) > time) {
                         long left = (globalCooldownMap.get(playerUUID) - time) / 1000;
+                        String message = MessageUtil.getMessages("VanillaFood-Global-Cooldown-Left", true);
+                        if (message != null && !message.isEmpty()) {
+                            message = message.replaceAll("%vanillafood_name%", (String) vanillaFood.getOptionValue(Food.Options.DISPLAYNAME));
+                            message = message.replaceAll("%vanillafood_global_time_left%", String.valueOf(left));
+                            message = PlaceholderAPI.setPlaceholders(player, message);
+                            player.sendMessage(message);
+                        }
                         return;
                     }
                 }
                 globalCooldownMap.put(playerUUID, (long) (time + (vanillaFoodManager.getGlobalCoolDown()) * 1000));
                 vanillaFoodManager.consumeVanillaFood(player, vanillaFood, hand);
-                break;
-            case PERSONAL:
+            }
+            case PERSONAL -> {
                 double foodCooldown = (double) vanillaFood.getOptionValue(Food.Options.COOLDOWN);
                 Map<Material, Long> temp = personalCooldownMap.getOrDefault(playerUUID, new HashMap<>());
                 if (temp.containsKey(itemStack.getType()) && temp.get(itemStack.getType()) > time) {
                     long left = (temp.get(itemStack.getType()) - time) / 1000;
+                    String message = MessageUtil.getMessages("VanillaFood-Global-Cooldown-Left", true);
+                    if (message != null && !message.isEmpty()) {
+                        message = message.replaceAll("%vanillafood_name%", (String) vanillaFood.getOptionValue(Food.Options.DISPLAYNAME));
+                        message = message.replaceAll("%vanillafood_personal_time_left%", String.valueOf(left));
+                        message = PlaceholderAPI.setPlaceholders(player, message);
+                        player.sendMessage(message);
+                    }
                     return;
                 }
                 temp.put(itemStack.getType(), (long) (time + (foodCooldown * 1000)));
                 personalCooldownMap.put(playerUUID, temp);
                 vanillaFoodManager.consumeVanillaFood(player, vanillaFood, hand);
-                break;
+            }
         }
     }
 
