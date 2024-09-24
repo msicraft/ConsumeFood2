@@ -2,6 +2,8 @@ package me.msicraft.consumefood2.Command;
 
 import me.msicraft.API.Food.CustomFood;
 import me.msicraft.API.Food.VanillaFood;
+import me.msicraft.consumefood.ConsumeFood;
+import me.msicraft.consumefood.File.CustomFoodConfig;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
 import me.msicraft.consumefood2.Utils.MessageUtil;
@@ -12,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,6 +40,18 @@ public class MainCommand implements CommandExecutor {
                         plugin.reloadVariables();
                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "Config files reloaded");
                         return true;
+                    }
+                    case "migrate" -> { //consumefood2 migrate
+                        if (!sender.hasPermission("consumefood2.command.migrate")) {
+                            MessageUtil.sendMessage(sender, "Permission-Error");
+                            return false;
+                        }
+                        if (Bukkit.getPluginManager().getPlugin("ConsumeFood") == null) {
+                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "ConsumeFood plugin not found");
+                            return false;
+                        }
+                        CustomFoodConfig customFoodConfig = ConsumeFood.customFoodConfig;
+                        FileConfiguration config = customFoodConfig.getConfig();
                     }
                     case "vanillafood" -> { //consumefood2 vanillafood <edit, give> <internalName> <amount> <targetPlayer>
                         String var2 = args[1];

@@ -9,19 +9,19 @@ public class MessageUtil {
     private MessageUtil() {
     }
 
-    public static String getMessages(String path, boolean applyColorCodes) {
+    public static String getConfigMessage(String path, boolean applyColorCodes) {
         if (!applyColorCodes) {
             return ConsumeFood2.getPlugin().getMessageData().getConfig().getString(path, null);
         }
         String message = ConsumeFood2.getPlugin().getMessageData().getConfig().getString(path, null);
         if (message != null) {
-            return ConsumeFood2API.translateColorCodes(message);
+            return ConsumeFood2API.getInstance().translateColorCodes(message);
         }
         return null;
     }
 
     public static void sendMessage(CommandSender sender, String messagePath) {
-        String message = getMessages(messagePath, true);
+        String message = getConfigMessage(messagePath, true);
         if (message != null && !message.isEmpty()) {
             sender.sendMessage(message);
         }

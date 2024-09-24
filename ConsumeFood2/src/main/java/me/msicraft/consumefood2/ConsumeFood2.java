@@ -36,7 +36,7 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood2] ";
     private boolean usePlaceHolderAPI = false;
-    private boolean upper_1_20_5 = false;
+    private boolean useFoodComponent = false;
 
     private MessageData messageData;
 
@@ -72,7 +72,7 @@ public final class ConsumeFood2 extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Bukkit Version: " + bukkitVersion);
             Set<String> sets = Set.of("1.20.5", "1.20.6", "1.21", "1.21.1");
             if (sets.contains(bukkitVersion)) {
-                upper_1_20_5 = true;
+                useFoodComponent = true;
             }
         }
 
@@ -168,8 +168,8 @@ public final class ConsumeFood2 extends JavaPlugin {
         //getServer().getConsoleSender().sendMessage(PREFIX + "Plugin replaced the old config.yml with config_old.yml and created a new config.yml");
     }
 
-    public boolean isUpper_1_20_5() {
-        return upper_1_20_5;
+    public boolean isUseFoodComponent() {
+        return useFoodComponent;
     }
 
     public boolean isUsePlaceHolderAPI() {

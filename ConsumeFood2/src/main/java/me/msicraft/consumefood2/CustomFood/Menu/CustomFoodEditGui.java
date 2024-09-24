@@ -82,7 +82,7 @@ public class CustomFoodEditGui extends CustomGui {
             String internalName = internalNames.get(a);
             CustomFood customFood = customFoodManager.getCustomFood(internalName);
             if (customFood != null) {
-                itemStack = customFood.getGuiItemStack(plugin.isUpper_1_20_5());
+                itemStack = customFood.getGuiItemStack(plugin.isUseFoodComponent());
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
                 itemMeta.setLore(lore);
@@ -120,7 +120,7 @@ public class CustomFoodEditGui extends CustomGui {
         lore.add(ChatColor.YELLOW + "Right Click: get item");
         lore.add("");
         for (String s : customFood.getLore()) {
-            s = ConsumeFood2API.translateColorCodes(s);
+            s = ConsumeFood2API.getInstance().translateColorCodes(s);
             lore.add(s);
         }
         itemStack = customFoodManager.createItemStack(customFood);
@@ -131,7 +131,7 @@ public class CustomFoodEditGui extends CustomGui {
         itemStack.setItemMeta(tItemMeta);
         gui.setItem(4, itemStack);
 
-        boolean upper_1_20_5 = plugin.isUpper_1_20_5();
+        boolean upper_1_20_5 = plugin.isUseFoodComponent();
         int count = 0;
         Food.Options[] foodOptions = Food.Options.values();
         for (Food.Options options : foodOptions) {
@@ -172,7 +172,7 @@ public class CustomFoodEditGui extends CustomGui {
                     itemStack = new ItemStack(Material.PAPER);
                     lore.add(ChatColor.GRAY + "Current Lore: ");
                     for (String s : customFood.getLore()) {
-                        s = ConsumeFood2API.translateColorCodes(s);
+                        s = ConsumeFood2API.getInstance().translateColorCodes(s);
                         lore.add(s);
                     }
                 }

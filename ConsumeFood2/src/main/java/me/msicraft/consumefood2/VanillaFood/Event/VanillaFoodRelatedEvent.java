@@ -2,12 +2,14 @@ package me.msicraft.consumefood2.VanillaFood.Event;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.CoolDownType;
+import me.msicraft.API.CustomEvent.VanillaFoodConsumeEvent;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.VanillaFood;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.Utils.MessageUtil;
 import me.msicraft.consumefood2.Utils.PlayerUtil;
 import me.msicraft.consumefood2.VanillaFood.VanillaFoodManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -81,13 +83,16 @@ public class VanillaFoodRelatedEvent implements Listener {
                 if (globalCooldownMap.containsKey(playerUUID)) {
                     if (globalCooldownMap.get(playerUUID) > time) {
                         long left = (globalCooldownMap.get(playerUUID) - time) / 1000;
-                        String message = MessageUtil.getMessages("VanillaFood-Global-Cooldown-Left", true);
+                        String message = MessageUtil.getConfigMessage("VanillaFood-Global-Cooldown-Left", true);
                         if (message != null && !message.isEmpty()) {
                             message = message.replaceAll("%vanillafood_name%", (String) vanillaFood.getOptionValue(Food.Options.DISPLAYNAME));
                             message = message.replaceAll("%vanillafood_global_time_left%", String.valueOf(left));
                             message = PlaceholderAPI.setPlaceholders(player, message);
                             player.sendMessage(message);
                         }
+
+                        Bukkit.getPluginManager().callEvent(new VanillaFoodConsumeEvent(false, left,
+                                player, hand, vanillaFood));
                         return;
                     }
                 }
@@ -99,13 +104,16 @@ public class VanillaFoodRelatedEvent implements Listener {
                 Map<Material, Long> temp = personalCooldownMap.getOrDefault(playerUUID, new HashMap<>());
                 if (temp.containsKey(itemStack.getType()) && temp.get(itemStack.getType()) > time) {
                     long left = (temp.get(itemStack.getType()) - time) / 1000;
-                    String message = MessageUtil.getMessages("VanillaFood-Global-Cooldown-Left", true);
+                    String message = MessageUtil.getConfigMessage("VanillaFood-Global-Cooldown-Left", true);
                     if (message != null && !message.isEmpty()) {
                         message = message.replaceAll("%vanillafood_name%", (String) vanillaFood.getOptionValue(Food.Options.DISPLAYNAME));
                         message = message.replaceAll("%vanillafood_personal_time_left%", String.valueOf(left));
                         message = PlaceholderAPI.setPlaceholders(player, message);
                         player.sendMessage(message);
                     }
+
+                    Bukkit.getPluginManager().callEvent(new VanillaFoodConsumeEvent(false, left,
+                            player, hand, vanillaFood));
                     return;
                 }
                 temp.put(itemStack.getType(), (long) (time + (foodCooldown * 1000)));

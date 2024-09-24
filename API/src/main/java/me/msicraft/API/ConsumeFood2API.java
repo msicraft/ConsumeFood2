@@ -7,9 +7,18 @@ import java.util.regex.Pattern;
 
 public class ConsumeFood2API {
 
+    private static ConsumeFood2API instance;
+
+    public static ConsumeFood2API getInstance() {
+        if (instance == null) {
+            instance = new ConsumeFood2API();
+        }
+        return instance;
+    }
+
     private static final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
 
-    public static String translateColorCodes(String message) {
+    public String translateColorCodes(String message) {
         message = ChatColor.translateAlternateColorCodes('&', message);
         Matcher matcher = HEX_PATTERN.matcher(message);
         while (matcher.find()) {

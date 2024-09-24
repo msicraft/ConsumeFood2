@@ -39,6 +39,10 @@
             <url>https://repo.codemc.io/repository/maven-public/</url>
             <layout>default</layout>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -52,6 +56,11 @@
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api</artifactId>
             <version>2.13.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.msicraft</groupId>
+            <artifactId>ConsumeFood</artifactId>
+            <version>-2610a9362c-1</version>
         </dependency>
     </dependencies>
 

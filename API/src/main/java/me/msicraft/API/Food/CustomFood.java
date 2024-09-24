@@ -67,17 +67,17 @@ public class CustomFood extends Food {
         return list;
     }
 
-    public ItemStack getGuiItemStack(boolean upper) {
+    public ItemStack getGuiItemStack(boolean useFoodComponent) {
         ItemStack itemStack = new ItemStack(getMaterial());
         ItemMeta itemMeta = itemStack.getItemMeta();
         String displayName = (String) getOptionValue(Options.DISPLAYNAME);
         if (displayName != null) {
-            itemMeta.setDisplayName(ConsumeFood2API.translateColorCodes(displayName));
+            itemMeta.setDisplayName(ConsumeFood2API.getInstance().translateColorCodes(displayName));
         }
 
         itemStack.setItemMeta(itemMeta);
         if (itemStack.getType() == Material.PLAYER_HEAD) {
-            if (upper) {
+            if (useFoodComponent) {
                 NBT.modifyComponents(itemStack, nbt -> {
                     ReadWriteNBT profileNbt = nbt.getOrCreateCompound("minecraft:profile");
                     profileNbt.setUUID("id", (UUID) getOptionValue(Food.Options.UUID));

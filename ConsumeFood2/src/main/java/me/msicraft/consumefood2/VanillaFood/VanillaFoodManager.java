@@ -2,6 +2,7 @@ package me.msicraft.consumefood2.VanillaFood;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.CoolDownType;
+import me.msicraft.API.CustomEvent.VanillaFoodConsumeEvent;
 import me.msicraft.API.Data.CustomGui;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.FoodCommand;
@@ -212,6 +213,11 @@ public class VanillaFoodManager {
     }
 
     public void consumeVanillaFood(Player player, VanillaFood vanillaFood, EquipmentSlot hand) {
+        Bukkit.getScheduler().runTask(plugin, ()-> {
+            Bukkit.getPluginManager().callEvent(new VanillaFoodConsumeEvent(true, -1,
+                    player, hand, vanillaFood));
+        });
+
         int foodLevel = (int) vanillaFood.getOptionValue(Food.Options.FOOD_LEVEL);
         double saturationD = (double) vanillaFood.getOptionValue(Food.Options.SATURATION);
         float saturation = (float) saturationD;

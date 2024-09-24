@@ -5,6 +5,7 @@ import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.ConsumeFood2API;
 import me.msicraft.API.CoolDownType;
+import me.msicraft.API.CustomEvent.CustomFoodConsumeEvent;
 import me.msicraft.API.Data.CustomGui;
 import me.msicraft.API.Food.*;
 import me.msicraft.consumefood2.ConsumeFood2;
@@ -317,7 +318,7 @@ public class CustomFoodManager {
             return GuiUtil.AIR_STACK;
         }
         ItemStack itemStack = new ItemStack((Material) customFood.getOptionValue(Food.Options.MATERIAL));
-        if (plugin.isUpper_1_20_5()) {
+        if (plugin.isUseFoodComponent()) {
             return Upper_1_20_6.getInstance().createCustomFoodItemStack(customFood, Map.of("CustomFood", customFoodKey, "UnStackable", unStackableKey));
         }
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -326,7 +327,7 @@ public class CustomFoodManager {
         if (customFood.hasOption(Food.Options.DISPLAYNAME)) {
             String displayName = (String) customFood.getOptionValue(Food.Options.DISPLAYNAME);
             if (displayName != null) {
-                displayName = ConsumeFood2API.translateColorCodes(displayName);
+                displayName = ConsumeFood2API.getInstance().translateColorCodes(displayName);
                 itemMeta.setDisplayName(displayName);
             }
         }
@@ -335,7 +336,7 @@ public class CustomFoodManager {
         }
         List<String> lore = new ArrayList<>(customFood.getLore().size());
         for (String s : customFood.getLore()) {
-            s = ConsumeFood2API.translateColorCodes(s);
+            s = ConsumeFood2API.getInstance().translateColorCodes(s);
             lore.add(s);
         }
         itemMeta.setLore(lore);
@@ -384,11 +385,19 @@ public class CustomFoodManager {
         return itemStack;
     }
 
-    public void consumeCustomFood(Player player, CustomFood customFood, EquipmentSlot hand) {
-        applyFoodLevelAndSaturation(player, customFood);
-        applyPotionEffects(player, customFood);
+    public void consumeCustomFood(Player player, CustomFood customFood, EquipmentSlot hand, boolean useFoodComponent) {
+        Bukkit.getScheduler().runTask(plugin, ()-> {
+            Bukkit.getPluginManager().callEvent(new CustomFoodConsumeEvent(true, -1,
+                    player, hand, customFood));
+        });
+
         applyExecuteCommands(player, customFood);
         applySound(player, customFood);
+        if (useFoodComponent) {
+            return;
+        }
+        applyFoodLevelAndSaturation(player, customFood);
+        applyPotionEffects(player, customFood);
 
         Material material = (Material) customFood.getOptionValue(Food.Options.MATERIAL);
         try {
@@ -407,6 +416,7 @@ public class CustomFoodManager {
             ItemStack handStack = player.getInventory().getItemInOffHand();
             handStack.setAmount(handStack.getAmount() - 1);
         }
+
     }
 
     public void applyFoodLevelAndSaturation(Player player, CustomFood customFood) {
