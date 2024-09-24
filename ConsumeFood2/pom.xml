@@ -84,5 +84,11 @@
             <artifactId>Upper_1_20_6</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.msicraft</groupId>
+            <artifactId>ConsumeFood</artifactId>
+            <version>-2610a9362c-1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
