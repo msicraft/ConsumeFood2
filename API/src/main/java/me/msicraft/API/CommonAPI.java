@@ -5,13 +5,13 @@ import org.bukkit.ChatColor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ConsumeFood2API {
+public class CommonAPI {
 
-    private static ConsumeFood2API instance;
+    private static CommonAPI instance;
 
-    public static ConsumeFood2API getInstance() {
+    public static CommonAPI getInstance() {
         if (instance == null) {
-            instance = new ConsumeFood2API();
+            instance = new CommonAPI();
         }
         return instance;
     }

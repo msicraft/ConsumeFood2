@@ -147,7 +147,17 @@ public class CustomFoodEditEvent implements Listener {
                     }
                 }
                 case SOUND -> {
-                    customFood.setOption(Food.Options.SOUND, message);
+                    try {
+                        String[] split = message.split(":");
+                        String soundName = split[0];
+                        float volume = Float.parseFloat(split[1]);
+                        float pitch = Float.parseFloat(split[2]);
+                        customFood.setOption(Food.Options.SOUND, message);
+                    } catch (ArrayIndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
+                        save = false;
+                        player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Command Format=====");
+                        player.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <sound>:<volume>:<pitch>");
+                    }
                 }
                 case POTION_COLOR -> {
                     customFood.setOption(Food.Options.POTION_COLOR, message);
@@ -266,6 +276,7 @@ public class CustomFoodEditEvent implements Listener {
                             CustomFood customFood = customFoodManager.getCustomFood(internalName);
                             Food.Options options = Food.Options.valueOf(data);
                             boolean open = true;
+                            boolean save = false;
                             switch (options) {
                                 case MATERIAL -> {
                                     if (e.isLeftClick()) {
@@ -277,6 +288,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.MATERIAL, Food.Options.MATERIAL.getBaseValue());
                                     }
                                 }
@@ -290,6 +302,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.TEXTURE_VALUE, Food.Options.TEXTURE_VALUE.getBaseValue());
                                     }
                                 }
@@ -303,6 +316,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.DISPLAYNAME, Food.Options.DISPLAYNAME.getBaseValue());
                                     }
                                 }
@@ -316,6 +330,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.CUSTOM_MODEL_DATA, Food.Options.CUSTOM_MODEL_DATA.getBaseValue());
                                     }
                                 }
@@ -329,6 +344,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.clearLore();
                                     }
                                 }
@@ -344,6 +360,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.clearPotionEffects();
                                     }
                                 }
@@ -359,6 +376,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.clearCommands();
                                     }
                                 }
@@ -372,6 +390,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.FOOD_LEVEL, Food.Options.FOOD_LEVEL.getBaseValue());
                                     }
                                 }
@@ -385,6 +404,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.SATURATION, Food.Options.SATURATION.getBaseValue());
                                     }
                                 }
@@ -398,6 +418,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.COOLDOWN, Food.Options.COOLDOWN.getBaseValue());
                                     }
                                 }
@@ -412,6 +433,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.clearEnchant();
                                     }
                                 }
@@ -422,7 +444,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.HIDE_ENCHANT, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.HIDE_ENCHANT);
+                                    save = true;
                                 }
                                 case DISABLE_CRAFTING -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_CRAFTING);
@@ -431,7 +453,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_CRAFTING, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_CRAFTING);
+                                    save = true;
                                 }
                                 case DISABLE_SMELTING -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_SMELTING);
@@ -440,7 +462,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_SMELTING, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_SMELTING);
+                                    save = true;
                                 }
                                 case DISABLE_ANVIL -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_ANVIL);
@@ -449,7 +471,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_ANVIL, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_ANVIL);
+                                    save = true;
                                 }
                                 case DISABLE_ENCHANT -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.DISABLE_ENCHANT);
@@ -458,18 +480,20 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.DISABLE_ENCHANT, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.DISABLE_ENCHANT);
+                                    save = true;
                                 }
                                 case SOUND -> {
                                     if (e.isLeftClick()) {
                                         open = false;
                                         player.sendMessage(ChatColor.GRAY + "========================================");
                                         player.sendMessage(ChatColor.GRAY + "Please enter the sound");
+                                        player.sendMessage(ChatColor.GRAY + "Format: <sound>:<volume>:<pitch>");
                                         player.sendMessage(ChatColor.GRAY + "Cancel when entering 'cancel'");
                                         player.sendMessage(ChatColor.GRAY + "========================================");
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.SOUND, Food.Options.SOUND.getBaseValue());
                                     }
                                 }
@@ -484,6 +508,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.POTION_COLOR, Food.Options.POTION_COLOR.getBaseValue());
                                     }
                                 }
@@ -494,7 +519,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.HIDE_POTION_EFFECT, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.HIDE_POTION_EFFECT);
+                                    save = true;
                                 }
                                 case UNSTACKABLE -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.UNSTACKABLE);
@@ -503,7 +528,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.UNSTACKABLE, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.UNSTACKABLE);
+                                    save = true;
                                 }
                                 case INSTANT_EAT -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.INSTANT_EAT);
@@ -512,7 +537,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.INSTANT_EAT, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.INSTANT_EAT);
+                                    save = true;
                                 }
                                 case ALWAYS_EAT -> {
                                     boolean b = (boolean) customFood.getOptionValue(Food.Options.ALWAYS_EAT);
@@ -521,7 +546,7 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.ALWAYS_EAT, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.ALWAYS_EAT);
+                                    save = true;
                                 }
                                 case EAT_SECONDS -> {
                                     if (e.isLeftClick()) {
@@ -533,6 +558,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.EAT_SECONDS, Food.Options.EAT_SECONDS.getBaseValue());
                                     }
                                 }
@@ -546,6 +572,7 @@ public class CustomFoodEditEvent implements Listener {
                                         playerData.setTempData("CustomFood_ChatEdit", data);
                                         player.closeInventory();
                                     } else if (e.isRightClick()) {
+                                        save = true;
                                         customFood.setOption(Food.Options.MAX_STACK_SIZE, Food.Options.MAX_STACK_SIZE.getBaseValue());
                                     }
                                 }
@@ -556,8 +583,11 @@ public class CustomFoodEditEvent implements Listener {
                                     } else {
                                         customFood.setOption(Food.Options.HIDE_ADDITIONAL_TOOLTIP, true);
                                     }
-                                    customFoodManager.saveOptionToConfig(customFood, Food.Options.HIDE_ADDITIONAL_TOOLTIP);
+                                    save = true;
                                 }
+                            }
+                            if (save) {
+                                customFoodManager.saveOptionToConfig(customFood, options);
                             }
                             if (open) {
                                 playerData.setTempData("CustomFood_Edit_Key", internalName);

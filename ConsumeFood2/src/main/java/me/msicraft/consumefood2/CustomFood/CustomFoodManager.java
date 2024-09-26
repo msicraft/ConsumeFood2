@@ -3,7 +3,7 @@ package me.msicraft.consumefood2.CustomFood;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.msicraft.API.ConsumeFood2API;
+import me.msicraft.API.CommonAPI;
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.CustomEvent.CustomFoodConsumeEvent;
 import me.msicraft.API.Data.CustomGui;
@@ -83,7 +83,44 @@ public class CustomFoodManager {
     public void saveOptionToConfig(CustomFood customFood, Food.Options options) {
         FileConfiguration config = customFoodData.getConfig();
         String path = "Food." + customFood.getInternalName() + "." + options.getPath();
-        config.set(path, customFood.getOptionValue(options));
+        if (options == Food.Options.LORE || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND
+                || options == Food.Options.ENCHANT) {
+            switch (options) {
+                case LORE -> {
+                    config.set(path, customFood.getLore());
+                }
+                case POTION_EFFECT -> {
+                    List<String> potionEffectList = new ArrayList<>();
+                    customFood.getPotionEffects().forEach(foodPotionEffect -> {
+                        potionEffectList.add(foodPotionEffect.toFormat());
+                    });
+                    if (potionEffectList.isEmpty()) {
+                        config.set(path, null);
+                    } else {
+                        config.set(path, potionEffectList);
+                    }
+                }
+                case COMMAND -> {
+                    List<String> commandList = new ArrayList<>();
+                    customFood.getCommands().forEach(command -> commandList.add(command.toFormat()));
+                    if (commandList.isEmpty()) {
+                        config.set(path, null);
+                    } else {
+                        config.set(path, commandList);
+                    }
+                }
+                case ENCHANT -> {
+                    List<String> enchantFormatList = customFood.getEnchantFormatList();
+                    if (enchantFormatList.isEmpty()) {
+                        config.set(path, null);
+                    } else {
+                        config.set(path, enchantFormatList);
+                    }
+                }
+            }
+        } else {
+            config.set(path, customFood.getOptionValue(options));
+        }
         customFoodData.saveConfig();
     }
 
@@ -303,7 +340,8 @@ public class CustomFoodManager {
         return customFoodMap.getOrDefault(internalName, null);
     }
 
-    public void registerCustomFood(String internalName, CustomFood customFood) {
+    public void registerCustomFood(CustomFood customFood) {
+        String internalName = customFood.getInternalName();
         customFoodMap.put(internalName, customFood);
         this.internalNames.add(internalName);
     }
@@ -327,7 +365,7 @@ public class CustomFoodManager {
         if (customFood.hasOption(Food.Options.DISPLAYNAME)) {
             String displayName = (String) customFood.getOptionValue(Food.Options.DISPLAYNAME);
             if (displayName != null) {
-                displayName = ConsumeFood2API.getInstance().translateColorCodes(displayName);
+                displayName = CommonAPI.getInstance().translateColorCodes(displayName);
                 itemMeta.setDisplayName(displayName);
             }
         }
@@ -336,7 +374,7 @@ public class CustomFoodManager {
         }
         List<String> lore = new ArrayList<>(customFood.getLore().size());
         for (String s : customFood.getLore()) {
-            s = ConsumeFood2API.getInstance().translateColorCodes(s);
+            s = CommonAPI.getInstance().translateColorCodes(s);
             lore.add(s);
         }
         itemMeta.setLore(lore);
@@ -446,7 +484,7 @@ public class CustomFoodManager {
     }
 
     public void applyExecuteCommands(Player player, CustomFood customFood) {
-        final boolean usePlaceHolderAPI = plugin.isUsePlaceHolderAPI();
+        boolean usePlaceHolderAPI = plugin.isUsePlaceHolderAPI();
         customFood.getCommands().forEach(foodCommand -> {
             String command = foodCommand.getCommand();
             if (usePlaceHolderAPI) {
@@ -469,7 +507,18 @@ public class CustomFoodManager {
     public void applySound(Player player, CustomFood customFood) {
         String soundS = (String) customFood.getOptionValue(Food.Options.SOUND);
         if (soundS != null) {
-            player.playSound(player.getLocation(), soundS, 1.0F, 1.0F);
+            try {
+                String[] a = soundS.split(":");
+                String soundName = a[0];
+                float volume = Float.parseFloat(a[1]);
+                float pitch = Float.parseFloat(a[2]);
+                player.playSound(player.getLocation(), soundName, volume, pitch);
+            } catch (ArrayIndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Sound Format=====");
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "CustomFood: " + customFood.getInternalName());
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + soundS);
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <sound>:<volume>:<pitch>");
+            }
         }
     }
 

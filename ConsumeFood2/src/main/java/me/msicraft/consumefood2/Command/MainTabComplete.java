@@ -23,7 +23,7 @@ public class MainTabComplete implements TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (command.getName().equalsIgnoreCase("consumefood2")) {
             if (args.length == 1) {
-                return List.of("reload", "customfood", "vanillafood", "foodlevel", "saturation");
+                return List.of("reload", "customfood", "vanillafood", "foodlevel", "saturation", "migrate");
             }
             if (args.length == 2) {
                 String var = args[0];
@@ -33,6 +33,8 @@ public class MainTabComplete implements TabCompleter {
                     return List.of("get", "set", "add");
                 } else if (var.equalsIgnoreCase("vanillafood")) {
                     return List.of("edit", "give");
+                } else if (var.equalsIgnoreCase("migrate")) {
+                    return List.of("customfood");
                 }
             }
             if (args.length == 3) {

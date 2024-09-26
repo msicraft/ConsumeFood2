@@ -52,7 +52,6 @@ public class CustomFoodRelatedEvent implements Listener {
             if (customFood != null) {
                 if (plugin.isUseFoodComponent()) {
                     customFoodConsume(player, customFood, null, true);
-                    customFoodManager.applyExecuteCommands(player, customFood);
                     return;
                 }
                 e.setCancelled(true);
