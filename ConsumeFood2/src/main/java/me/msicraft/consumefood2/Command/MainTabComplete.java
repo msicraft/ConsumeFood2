@@ -76,12 +76,10 @@ public class MainTabComplete implements TabCompleter {
                         } else if (var2.equalsIgnoreCase("vanillafood")) {
                             List<String> list = new ArrayList<>();
                             list.add("all-vanillafood");
-                            ConfigurationSection section = ConsumeFood.getPlugin().getConfig().getConfigurationSection("Food");
-                            if (section != null) {
-                                Set<String> keys = section.getKeys(false);
-                                list.addAll(keys);
-                                return list;
-                            }
+                            plugin.getVanillaFoodManager().getVanillaFoodMaterials().forEach(material -> {
+                                list.add(material.name().toUpperCase());
+                            });
+                            return list;
                         }
                     }
                 }

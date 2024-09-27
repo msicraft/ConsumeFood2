@@ -1,14 +1,16 @@
 v1.0 dev-4 {
 
-    - Added migration feature from ConsumeFood 1 to 2 for CustomFood
+    - Added migration feature from ConsumeFood 1 to 2 for CustomFood and VanillaFood
     - Fixed an issue where some options were not being saved correctly
     - Fixed an issue where Execute Command was executed twice
 
     Add commands
     - /consumefood2 migrate customfood
+    - /consumefood2 migrate vanillafood
 
     Add permissions
     - consumefood2.command.migrate.customfood
+    - consumefood2.command.migrate.vanillafood
 
 }
 

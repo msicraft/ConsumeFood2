@@ -11,6 +11,7 @@ import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
 import me.msicraft.consumefood2.Utils.MessageUtil;
 import me.msicraft.consumefood2.Utils.MigrationUtil;
 import me.msicraft.consumefood2.VanillaFood.Menu.VanillaFoodEditGui;
+import me.msicraft.consumefood2.VanillaFood.VanillaFoodManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -71,14 +72,14 @@ public class MainCommand implements CommandExecutor {
                                             for (String internalName : internalNames) {
                                                 try {
                                                     CustomFood customFood = MigrationUtil.getOldCustomFoodMigration(customFoodConfig, internalName);
-                                                    customFoodManager.saveCustomFoodToConfig(customFood, false);
+                                                    customFoodManager.saveCustomFoodToConfig(customFood,false);
                                                     customFoodManager.registerCustomFood(customFood);
                                                     count++;
                                                 } catch (MigrationFail e) {
                                                     e.printStackTrace();
                                                 }
                                             }
-                                            plugin.getCustomFoodManager().getCustomFoodData().saveConfig();
+                                            customFoodManager.getCustomFoodData().saveConfig();
                                             sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.AQUA + count + ChatColor.GREEN + " customfoods were successfully migrated");
                                             return true;
                                         } else {
@@ -105,9 +106,45 @@ public class MainCommand implements CommandExecutor {
                                         return false;
                                     }
                                     String var3 = args[2];
+                                    FileConfiguration oldConfig = ConsumeFood.getPlugin().getConfig();
+                                    VanillaFoodManager vanillaFoodManager = plugin.getVanillaFoodManager();
                                     if (var3.equals("all-vanillafood")) {
-
+                                        ConfigurationSection section = oldConfig.getConfigurationSection("Food");
+                                        if (section != null) {
+                                            Set<String> materialNames = section.getKeys(false);
+                                            int count = 0;
+                                            for (String materialName : materialNames) {
+                                                try {
+                                                    Material material = Material.getMaterial(materialName.toUpperCase());
+                                                    if (material != null) {
+                                                        VanillaFood vanillaFood = MigrationUtil.oldVanillaFoodMigration(oldConfig, material);
+                                                        vanillaFoodManager.saveVanillaFoodToConfig(vanillaFood, false);
+                                                        count++;
+                                                    }
+                                                } catch (MigrationFail e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                            vanillaFoodManager.getVanillaFoodData().saveConfig();
+                                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.AQUA + count + ChatColor.GREEN + " vanillafoods were successfully migrated");
+                                            return true;
+                                        } else {
+                                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "Fail migration");
+                                            return false;
+                                        }
                                     } else {
+                                        try {
+                                            Material material = Material.getMaterial(args[2].toUpperCase());
+                                            VanillaFood vanillaFood = MigrationUtil.oldVanillaFoodMigration(oldConfig, material);
+                                            vanillaFoodManager.saveVanillaFoodToConfig(vanillaFood, true);
+                                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "Migrated successfully: " + ChatColor.AQUA + material.name());
+                                            return true;
+                                        } catch (ArrayIndexOutOfBoundsException ea) {
+                                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 migrate vanillafood <VanillaFood_Material>");
+                                            return false;
+                                        } catch (MigrationFail eb) {
+                                            eb.printStackTrace();
+                                        }
                                     }
                                 }
                             }

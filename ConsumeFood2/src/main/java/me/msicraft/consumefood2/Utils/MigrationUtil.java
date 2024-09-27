@@ -4,10 +4,7 @@ import me.msicraft.API.CommonAPI;
 import me.msicraft.API.CustomException.InvalidFormat;
 import me.msicraft.API.CustomException.MigrationFail;
 import me.msicraft.API.CustomException.UnknownPotionEffectType;
-import me.msicraft.API.Food.CustomFood;
-import me.msicraft.API.Food.Food;
-import me.msicraft.API.Food.FoodCommand;
-import me.msicraft.API.Food.FoodPotionEffect;
+import me.msicraft.API.Food.*;
 import me.msicraft.consumefood.File.CustomFoodConfig;
 import me.msicraft.consumefood2.ConsumeFood2;
 import org.bukkit.Bukkit;
@@ -22,6 +19,53 @@ import java.util.UUID;
 public class MigrationUtil {
 
     private MigrationUtil() {}
+
+    public static VanillaFood oldVanillaFoodMigration(FileConfiguration oldConfig, Material material) throws MigrationFail {
+        if (!ConsumeFood2.getPlugin().getVanillaFoodManager().hasVanillaFood(material)) {
+            throw new MigrationFail("VanillaFood does not exist");
+        }
+        String path = "Food." + material.name().toUpperCase();
+        VanillaFood vanillaFood = ConsumeFood2.getPlugin().getVanillaFoodManager().getVanillaFood(material);
+        vanillaFood.clearCommands();
+        vanillaFood.clearPotionEffects();
+        for (Food.Options options : Food.Options.values()) {
+            if (options.isCustomFoodOption() || options == Food.Options.MATERIAL || options.getOldPath() == null) {
+                continue;
+            }
+            String oldPath = path + "." + options.getOldPath();
+            if (oldConfig.contains(oldPath)) {
+                switch (options) {
+                    case FOOD_LEVEL -> {
+                        vanillaFood.setOption(options, oldConfig.getInt(oldPath, (int) options.getBaseValue()));
+                    }
+                    case SATURATION, COOLDOWN -> {
+                        vanillaFood.setOption(options, oldConfig.getDouble(oldPath, (double) options.getBaseValue()));
+                    }
+                    case POTION_EFFECT -> {
+                        oldConfig.getStringList(oldPath).forEach(format -> {
+                            try {
+                                FoodPotionEffect foodPotionEffect = CommonAPI.getInstance().formatToFoodPotionEffect(format);
+                                vanillaFood.addPotionEffect(foodPotionEffect);
+                            } catch (InvalidFormat | UnknownPotionEffectType e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                    case COMMAND -> {
+                        oldConfig.getStringList(oldPath).forEach(format -> {
+                            try {
+                                FoodCommand foodCommand = CommonAPI.getInstance().formatToFoodCommand(format);
+                                vanillaFood.addCommand(foodCommand);
+                            } catch (InvalidFormat e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return vanillaFood;
+    }
 
     public static CustomFood getOldCustomFoodMigration(CustomFoodConfig customFoodConfig, String internalName) throws MigrationFail {
         if (ConsumeFood2.getPlugin().getCustomFoodManager().hasCustomFood(internalName)) {

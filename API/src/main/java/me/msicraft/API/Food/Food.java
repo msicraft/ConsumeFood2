@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class Food {
+public abstract class Food {
 
     public enum Options {
         MATERIAL("Material", false, "Material", List.of("Food Material"), Material.APPLE, "Material", "Material"),
@@ -15,7 +15,7 @@ public class Food {
         LORE("None", true, "Lore", List.of("The lore of the item"),null, "Lore", "Lore"),
         POTION_EFFECT("None", false, "Potion Effect", List.of("Potion effects applied when consumed"), null, "PotionEffect", "PotionEffect"),
         COMMAND("None", false, "Command", List.of("Execute commands applied when consumed"), null, "Command", "Command"),
-        FOOD_LEVEL("Integer", false, "Food Level", List.of("Amount of food level restored when consumed"),0, "FoodLevel", "Foodlevel"),
+        FOOD_LEVEL("Integer", false, "Food Level", List.of("Amount of food level restored when consumed"),0, "FoodLevel", "FoodLevel"),
         SATURATION("Double", false, "Saturation", List.of("Amount of saturation restored when consumed"),0.0, "Saturation", "Saturation"),
         COOLDOWN("Double", false, "Personal CoolDown", List.of("The value used when the value of CooldownType is personal."), 0.0, "CoolDown", "Cooldown"),
         ENCHANT("None", true, "Enchant", List.of("List of enchantments to be applied to items"),null, "Enchant", "Enchant"),

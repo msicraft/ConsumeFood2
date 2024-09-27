@@ -162,6 +162,37 @@ public class VanillaFoodManager {
         Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + count + " VanillaFood loaded");
     }
 
+    public void saveVanillaFoodToConfig(VanillaFood vanillaFood, boolean saveConfig) {
+        FileConfiguration config = vanillaFoodData.getConfig();
+        Set<Food.Options> optionsSet = vanillaFood.getOptions();
+        String basePath = "Food." + vanillaFood.getMaterial().name().toUpperCase();
+        for (Food.Options options : optionsSet) {
+            if (options == Food.Options.MATERIAL || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND) {
+                continue;
+            }
+            String path = basePath + "." + options.getPath();
+            config.set(path, vanillaFood.getOptionValue(options));
+        }
+        List<String> potionEffectList = new ArrayList<>();
+        vanillaFood.getPotionEffects().forEach(potionEffect -> potionEffectList.add(potionEffect.toFormat()));
+        if (potionEffectList.isEmpty()) {
+            config.set(basePath + ".PotionEffect", null);
+        } else {
+            config.set(basePath + ".PotionEffect", potionEffectList);
+        }
+
+        List<String> commandList = new ArrayList<>();
+        vanillaFood.getCommands().forEach(command -> commandList.add(command.toFormat()));
+        if (commandList.isEmpty()) {
+            config.set(basePath + ".Command", null);
+        } else {
+            config.set(basePath + ".Command", commandList);
+        }
+        if (saveConfig) {
+            vanillaFoodData.saveConfig();
+        }
+    }
+
     public void saveVanillaFood() {
         int count = 0;
         FileConfiguration config = vanillaFoodData.getConfig();
@@ -170,10 +201,10 @@ public class VanillaFoodManager {
             VanillaFood vanillaFood = vanillaFoodMap.get(material);
 
             for (Food.Options options : vanillaFood.getOptions()) {
-                if (options == Food.Options.MATERIAL) {
+                if (options == Food.Options.MATERIAL || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND) {
                     continue;
                 }
-                config.set(path + "." + options.getPath(),  vanillaFood.getOptionValue(options));
+                config.set(path + "." + options.getPath(), vanillaFood.getOptionValue(options));
             }
 
             List<String> potionEffectList = new ArrayList<>();
@@ -210,6 +241,10 @@ public class VanillaFoodManager {
             }
         }
         return false;
+    }
+
+    public boolean hasVanillaFood(Material material) {
+        return vanillaFoodMap.containsKey(material);
     }
 
     public void consumeVanillaFood(Player player, VanillaFood vanillaFood, EquipmentSlot hand) {
