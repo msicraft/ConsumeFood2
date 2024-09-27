@@ -247,61 +247,67 @@ public class CustomFoodManager {
         Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + count + " CustomFood loaded");
     }
 
+    public void saveCustomFoodToConfig(CustomFood customFood, boolean saveConfig) {
+        FileConfiguration config = customFoodData.getConfig();
+        Set<Food.Options> optionsSet = customFood.getOptions();
+        String path = "Food." + customFood.getInternalName();
+        for (Food.Options options : optionsSet) {
+            if (options == Food.Options.LORE || options == Food.Options.ENCHANT
+                    || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND) {
+                continue;
+            }
+            String p = path + "." + options.getPath();
+            if (options == Food.Options.MATERIAL) {
+                Material material = customFood.getMaterial();
+                config.set(p, material.name());
+                continue;
+            } else if (options == Food.Options.UUID) {
+                config.set(p, customFood.getOptionValue(options).toString());
+                continue;
+            }
+            config.set(p, customFood.getOptionValue(options));
+        }
+
+        List<String> lore = customFood.getLore();
+        if (lore.isEmpty()) {
+            config.set(path + ".Lore", null);
+        } else {
+            config.set(path + ".Lore", lore);
+        }
+
+        List<String> enchantFormatList = customFood.getEnchantFormatList();
+        if (enchantFormatList.isEmpty()) {
+            config.set(path + ".Enchant", null);
+        } else {
+            config.set(path + ".Enchant", enchantFormatList);
+        }
+
+        List<String> potionEffectList = new ArrayList<>();
+        customFood.getPotionEffects().forEach(potionEffect -> potionEffectList.add(potionEffect.toFormat()));
+        if (potionEffectList.isEmpty()) {
+            config.set(path + ".PotionEffect", null);
+        } else {
+            config.set(path + ".PotionEffect", potionEffectList);
+        }
+
+        List<String> commandList = new ArrayList<>();
+        customFood.getCommands().forEach(command -> commandList.add(command.toFormat()));
+        if (commandList.isEmpty()) {
+            config.set(path + ".Command", null);
+        } else {
+            config.set(path + ".Command", commandList);
+        }
+        if (saveConfig) {
+            customFoodData.saveConfig();
+        }
+    }
+
     public void saveCustomFood() {
         int count = 0;
-        FileConfiguration config = customFoodData.getConfig();
         Set<String> internalNames = customFoodMap.keySet();
         for (String internalName : internalNames) {
-            String path = "Food." + internalName;
             CustomFood customFood = customFoodMap.get(internalName);
-            Set<Food.Options> optionsSet = customFood.getOptions();
-            for (Food.Options options : optionsSet) {
-                if (options == Food.Options.LORE || options == Food.Options.ENCHANT
-                        || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND) {
-                    continue;
-                }
-                String p = path + "." + options.getPath();
-                if (options == Food.Options.MATERIAL) {
-                    Material material = customFood.getMaterial();
-                    config.set(p, material.name());
-                    continue;
-                } else if (options == Food.Options.UUID) {
-                    config.set(p, customFood.getOptionValue(options).toString());
-                    continue;
-                }
-                config.set(p, customFood.getOptionValue(options));
-            }
-
-            List<String> lore = customFood.getLore();
-            if (lore.isEmpty()) {
-                config.set(path + ".Lore", null);
-            } else {
-                config.set(path + ".Lore", lore);
-            }
-
-            List<String> enchantFormatList = customFood.getEnchantFormatList();
-            if (enchantFormatList.isEmpty()) {
-                config.set(path + ".Enchant", null);
-            } else {
-                config.set(path + ".Enchant", enchantFormatList);
-            }
-
-            List<String> potionEffectList = new ArrayList<>();
-            customFood.getPotionEffects().forEach(potionEffect -> potionEffectList.add(potionEffect.toFormat()));
-            if (potionEffectList.isEmpty()) {
-                config.set(path + ".PotionEffect", null);
-            } else {
-                config.set(path + ".PotionEffect", potionEffectList);
-            }
-
-            List<String> commandList = new ArrayList<>();
-            customFood.getCommands().forEach(command -> commandList.add(command.toFormat()));
-            if (commandList.isEmpty()) {
-                config.set(path + ".Command", null);
-            } else {
-                config.set(path + ".Command", commandList);
-            }
-
+            saveCustomFoodToConfig(customFood, false);
             count++;
         }
         customFoodData.saveConfig();

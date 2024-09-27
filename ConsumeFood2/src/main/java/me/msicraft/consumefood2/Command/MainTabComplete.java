@@ -1,14 +1,18 @@
 package me.msicraft.consumefood2.Command;
 
+import me.msicraft.consumefood.ConsumeFood;
 import me.msicraft.consumefood2.ConsumeFood2;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class MainTabComplete implements TabCompleter {
 
@@ -34,7 +38,7 @@ public class MainTabComplete implements TabCompleter {
                 } else if (var.equalsIgnoreCase("vanillafood")) {
                     return List.of("edit", "give");
                 } else if (var.equalsIgnoreCase("migrate")) {
-                    return List.of("customfood");
+                    return List.of("customfood", "vanillafood");
                 }
             }
             if (args.length == 3) {
@@ -57,6 +61,28 @@ public class MainTabComplete implements TabCompleter {
                             s.add(material.name());
                         });
                         return s;
+                    }
+                } else if (var.equalsIgnoreCase("migrate")) {
+                    if (Bukkit.getPluginManager().getPlugin("ConsumeFood") != null) {
+                        if (var2.equalsIgnoreCase("customfood")) {
+                            List<String> list = new ArrayList<>();
+                            list.add("all-customfood");
+                            ConfigurationSection section = ConsumeFood.customFoodConfig.getConfig().getConfigurationSection("CustomFood");
+                            if (section != null) {
+                                Set<String> keys = section.getKeys(false);
+                                list.addAll(keys);
+                                return list;
+                            }
+                        } else if (var2.equalsIgnoreCase("vanillafood")) {
+                            List<String> list = new ArrayList<>();
+                            list.add("all-vanillafood");
+                            ConfigurationSection section = ConsumeFood.getPlugin().getConfig().getConfigurationSection("Food");
+                            if (section != null) {
+                                Set<String> keys = section.getKeys(false);
+                                list.addAll(keys);
+                                return list;
+                            }
+                        }
                     }
                 }
             }
