@@ -2,6 +2,10 @@ package me.msicraft.consumefood2;
 
 import org.bukkit.Bukkit;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Scanner;
 import java.util.function.Consumer;
 
 public class BukkitChecker {
@@ -24,7 +28,6 @@ public class BukkitChecker {
     }
 
     public void getPluginUpdateCheck(Consumer<String> consumer) {
-        /*
         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId).openStream(); Scanner scanner = new Scanner(inputStream)) {
                 if (scanner.hasNext()) {
@@ -34,8 +37,6 @@ public class BukkitChecker {
                 plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
             }
         });
-
-         */
     }
 
 }

@@ -86,7 +86,7 @@ public class VanillaFoodRelatedEvent implements Listener {
                         String message = MessageUtil.getConfigMessage("VanillaFood-Global-Cooldown-Left", true);
                         if (message != null && !message.isEmpty()) {
                             message = message.replaceAll("%vanillafood_name%", (String) vanillaFood.getOptionValue(Food.Options.DISPLAYNAME));
-                            message = message.replaceAll("%vanillafood_global_time_left%", String.valueOf(left));
+                            message = message.replaceAll("%vanillafood_global_timeleft%", String.valueOf(left));
                             message = PlaceholderAPI.setPlaceholders(player, message);
                             player.sendMessage(message);
                         }
@@ -107,7 +107,7 @@ public class VanillaFoodRelatedEvent implements Listener {
                     String message = MessageUtil.getConfigMessage("VanillaFood-Global-Cooldown-Left", true);
                     if (message != null && !message.isEmpty()) {
                         message = message.replaceAll("%vanillafood_name%", (String) vanillaFood.getOptionValue(Food.Options.DISPLAYNAME));
-                        message = message.replaceAll("%vanillafood_personal_time_left%", String.valueOf(left));
+                        message = message.replaceAll("%vanillafood_personal_timeleft%", String.valueOf(left));
                         message = PlaceholderAPI.setPlaceholders(player, message);
                         player.sendMessage(message);
                     }
