@@ -76,17 +76,17 @@ public final class ConsumeFood2 extends JavaPlugin {
             }
         }
 
+        /*
         bukkitChecker.getPluginUpdateCheck(version -> {
-            /*
             if (this.getDescription().getVersion().equals(version)) {
                 getLogger().info("There is not a new update available.");
             } else {
-                getLogger().info("A new version of the plugin is available: (v" + version + "), Current: v" + getDescription().getVersion());
-                getLogger().info("If the current version is higher, it is the development version.");
+                getLogger().info("A new version of the plugin is available: (v." + version + "), Current: v." + getDescription().getVersion());
+                //getLogger().info("If the current version is higher, it is the development version.");
             }
-
-             */
         });
+
+         */
 
         messageData = new MessageData(this);
 

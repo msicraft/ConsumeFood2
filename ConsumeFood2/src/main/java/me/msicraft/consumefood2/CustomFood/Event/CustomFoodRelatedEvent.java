@@ -97,7 +97,7 @@ public class CustomFoodRelatedEvent implements Listener {
                         String message = MessageUtil.getConfigMessage("CustomFood-Global-Cooldown-Left", true);
                         if (message != null && !message.isEmpty()) {
                             message = message.replaceAll("%customfood_name%", (String) customFood.getOptionValue(Food.Options.DISPLAYNAME));
-                            message = message.replaceAll("%customfood_global_time_left%", String.valueOf(left));
+                            message = message.replaceAll("%customfood_global_timeleft%", String.valueOf(left));
                             message = PlaceholderAPI.setPlaceholders(player, message);
                             player.sendMessage(message);
                         }
@@ -119,7 +119,7 @@ public class CustomFoodRelatedEvent implements Listener {
                     String message = MessageUtil.getConfigMessage("CustomFood-Personal-Cooldown-Left", true);
                     if (message != null && !message.isEmpty()) {
                         message = message.replaceAll("%customfood_name%", (String) customFood.getOptionValue(Food.Options.DISPLAYNAME));
-                        message = message.replaceAll("%customfood_personal_time_left%", String.valueOf(left));
+                        message = message.replaceAll("%customfood_personal_timeleft%", String.valueOf(left));
                         message = PlaceholderAPI.setPlaceholders(player, message);
                         player.sendMessage(message);
                     }

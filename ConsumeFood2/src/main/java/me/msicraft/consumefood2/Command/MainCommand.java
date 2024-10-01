@@ -472,9 +472,4 @@ public class MainCommand implements CommandExecutor {
         return false;
     }
 
-    private CustomFood migrationCustomFood(CustomFoodConfig customFoodConfig) {
-        FileConfiguration oldConfig = customFoodConfig.getConfig();
-        return null;
-    }
-
 }
