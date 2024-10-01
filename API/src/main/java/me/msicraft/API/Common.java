@@ -10,14 +10,14 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommonAPI {
+public class Common {
 
-    private static CommonAPI instance;
+    private static Common instance;
     public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood2] ";
 
-    public static CommonAPI getInstance() {
+    public static Common getInstance() {
         if (instance == null) {
-            instance = new CommonAPI();
+            instance = new Common();
         }
         return instance;
     }

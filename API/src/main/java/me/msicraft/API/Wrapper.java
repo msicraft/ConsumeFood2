@@ -11,6 +11,6 @@ public interface Wrapper {
     ItemStack createCustomFoodItemStack(CustomFood customFood, Map<String, NamespacedKey> namespacedKeyMap);
 
     default String translateColorCodes(String message) {
-        return CommonAPI.getInstance().translateColorCodes(message);
+        return Common.getInstance().translateColorCodes(message);
     }
 }

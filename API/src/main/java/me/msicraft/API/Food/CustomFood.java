@@ -2,7 +2,7 @@ package me.msicraft.API.Food;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
-import me.msicraft.API.CommonAPI;
+import me.msicraft.API.Common;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -72,7 +72,7 @@ public class CustomFood extends Food {
         ItemMeta itemMeta = itemStack.getItemMeta();
         String displayName = (String) getOptionValue(Options.DISPLAYNAME);
         if (displayName != null) {
-            itemMeta.setDisplayName(CommonAPI.getInstance().translateColorCodes(displayName));
+            itemMeta.setDisplayName(Common.getInstance().translateColorCodes(displayName));
         }
 
         itemStack.setItemMeta(itemMeta);

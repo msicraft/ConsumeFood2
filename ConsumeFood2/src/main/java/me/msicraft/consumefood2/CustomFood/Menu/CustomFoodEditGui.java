@@ -1,6 +1,6 @@
 package me.msicraft.consumefood2.CustomFood.Menu;
 
-import me.msicraft.API.CommonAPI;
+import me.msicraft.API.Common;
 import me.msicraft.API.Data.CustomGui;
 import me.msicraft.API.Food.CustomFood;
 import me.msicraft.API.Food.Food;
@@ -120,7 +120,7 @@ public class CustomFoodEditGui extends CustomGui {
         lore.add(ChatColor.YELLOW + "Right Click: get item");
         lore.add("");
         for (String s : customFood.getLore()) {
-            s = CommonAPI.getInstance().translateColorCodes(s);
+            s = Common.getInstance().translateColorCodes(s);
             lore.add(s);
         }
         itemStack = customFoodManager.createItemStack(customFood);
@@ -172,7 +172,7 @@ public class CustomFoodEditGui extends CustomGui {
                     itemStack = new ItemStack(Material.PAPER);
                     lore.add(ChatColor.GRAY + "Current Lore: ");
                     for (String s : customFood.getLore()) {
-                        s = CommonAPI.getInstance().translateColorCodes(s);
+                        s = Common.getInstance().translateColorCodes(s);
                         lore.add(s);
                     }
                 }

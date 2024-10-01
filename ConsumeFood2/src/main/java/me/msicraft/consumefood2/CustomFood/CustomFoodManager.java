@@ -3,7 +3,7 @@ package me.msicraft.consumefood2.CustomFood;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.msicraft.API.CommonAPI;
+import me.msicraft.API.Common;
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.CustomEvent.CustomFoodConsumeEvent;
 import me.msicraft.API.Data.CustomGui;
@@ -371,7 +371,7 @@ public class CustomFoodManager {
         if (customFood.hasOption(Food.Options.DISPLAYNAME)) {
             String displayName = (String) customFood.getOptionValue(Food.Options.DISPLAYNAME);
             if (displayName != null) {
-                displayName = CommonAPI.getInstance().translateColorCodes(displayName);
+                displayName = Common.getInstance().translateColorCodes(displayName);
                 itemMeta.setDisplayName(displayName);
             }
         }
@@ -380,7 +380,7 @@ public class CustomFoodManager {
         }
         List<String> lore = new ArrayList<>(customFood.getLore().size());
         for (String s : customFood.getLore()) {
-            s = CommonAPI.getInstance().translateColorCodes(s);
+            s = Common.getInstance().translateColorCodes(s);
             lore.add(s);
         }
         itemMeta.setLore(lore);

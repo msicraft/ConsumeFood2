@@ -1,6 +1,6 @@
 package me.msicraft.consumefood2.Utils;
 
-import me.msicraft.API.CommonAPI;
+import me.msicraft.API.Common;
 import me.msicraft.API.CustomException.InvalidFormat;
 import me.msicraft.API.CustomException.MigrationFail;
 import me.msicraft.API.CustomException.UnknownPotionEffectType;
@@ -44,7 +44,7 @@ public class MigrationUtil {
                     case POTION_EFFECT -> {
                         oldConfig.getStringList(oldPath).forEach(format -> {
                             try {
-                                FoodPotionEffect foodPotionEffect = CommonAPI.getInstance().formatToFoodPotionEffect(format);
+                                FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(format);
                                 vanillaFood.addPotionEffect(foodPotionEffect);
                             } catch (InvalidFormat | UnknownPotionEffectType e) {
                                 e.printStackTrace();
@@ -54,7 +54,7 @@ public class MigrationUtil {
                     case COMMAND -> {
                         oldConfig.getStringList(oldPath).forEach(format -> {
                             try {
-                                FoodCommand foodCommand = CommonAPI.getInstance().formatToFoodCommand(format);
+                                FoodCommand foodCommand = Common.getInstance().formatToFoodCommand(format);
                                 vanillaFood.addCommand(foodCommand);
                             } catch (InvalidFormat e) {
                                 e.printStackTrace();
@@ -118,7 +118,7 @@ public class MigrationUtil {
                     case POTION_EFFECT -> {
                         oldConfig.getStringList(oldPath).forEach(format -> {
                             try {
-                                FoodPotionEffect foodPotionEffect = CommonAPI.getInstance().formatToFoodPotionEffect(format);
+                                FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(format);
                                 customFood.addPotionEffect(foodPotionEffect);
                             } catch (InvalidFormat | UnknownPotionEffectType e) {
                                 e.printStackTrace();
@@ -128,7 +128,7 @@ public class MigrationUtil {
                     case COMMAND -> {
                         oldConfig.getStringList(oldPath).forEach(format -> {
                             try {
-                                FoodCommand foodCommand = CommonAPI.getInstance().formatToFoodCommand(format);
+                                FoodCommand foodCommand = Common.getInstance().formatToFoodCommand(format);
                                 customFood.addCommand(foodCommand);
                             } catch (InvalidFormat e) {
                                 e.printStackTrace();
