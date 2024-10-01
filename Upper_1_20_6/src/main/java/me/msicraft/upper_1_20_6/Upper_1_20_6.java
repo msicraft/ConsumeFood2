@@ -39,7 +39,7 @@ public class Upper_1_20_6 implements Wrapper {
 
     @Override
     public ItemStack createCustomFoodItemStack(CustomFood customFood, Map<String, NamespacedKey> namespacedKeyMap) {
-        ItemStack itemStack = new ItemStack((Material) customFood.getOptionValue(Food.Options.MATERIAL));
+        ItemStack itemStack = new ItemStack(customFood.getMaterial());
         ItemMeta itemMeta = itemStack.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
         FoodComponent foodComponent = itemMeta.getFood();
@@ -114,7 +114,7 @@ public class Upper_1_20_6 implements Wrapper {
                 propertiesNbt.setString("name", "textures");
                 propertiesNbt.setString("value", (String) customFood.getOptionValue(Food.Options.TEXTURE_VALUE));
             });
-        } else if (itemStack.getType() == Material.GLASS_BOTTLE) {
+        } else if (itemStack.getType() == Material.POTION || itemStack.getType() == Material.LINGERING_POTION || itemStack.getType() == Material.LINGERING_POTION) {
             PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
             String colorCode = (String) customFood.getOptionValue(Food.Options.POTION_COLOR);
             Color color;
