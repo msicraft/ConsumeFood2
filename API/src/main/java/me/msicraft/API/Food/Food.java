@@ -27,12 +27,12 @@ public abstract class Food {
         SOUND("String", true, "Sound", List.of("Sound to be played when consumed"),null, "Sound", "Sound"),
         POTION_COLOR("String", true, "PotionColor", List.of("Value used when the material is a potion"),"#ffffff", "PotionColor", "PotionColor"),
         HIDE_POTION_EFFECT("Boolean", true, "Hide PotionEffect", List.of("Whether or not the item is potion effect"),false, "HidePotionEffect", "HidePotionEffect"),
-        HIDE_ADDITIONAL_TOOLTIP("Boolean", true, "Hide Additional Tooltip", List.of("Hide potion effects, book and firework information, map tooltips, patterns of banners", "+ 1.20.5"),false, "HideAdditionalTooltip", null),
+        HIDE_ADDITIONAL_TOOLTIP("Boolean", true, "Hide Additional Tooltip", List.of("Hide potion effects, book and firework information, map tooltips, patterns of banners (+ 1.20.5)"),false, "HideAdditionalTooltip", null),
         UNSTACKABLE("Boolean", true, "UnStackable", List.of("Prevent stacking of items"),false, "UnStackable", "Unstackable"),
         INSTANT_EAT("Boolean", false, "Instant Eat", List.of("Right click to eat the item immediately"),false, "InstantEat", null),
-        ALWAYS_EAT("Boolean", true, "Always Eat", List.of("Can eat anytime", "+ 1.20.5"),false, "AlwaysEat", null),
-        EAT_SECONDS("Double", true, "Eat Seconds", List.of("Eat seconds", "+ 1.20.5"),-1.0, "EatSeconds", null),
-        MAX_STACK_SIZE("Integer", true, "Max Stack Size", List.of("Max Stack Size","+ 1.20.5"),1, "MaxStackSize", null),
+        ALWAYS_EAT("Boolean", true, "Always Eat", List.of("Can eat anytime (+ 1.20.5)"),false, "AlwaysEat", null),
+        EAT_SECONDS("Double", true, "Eat Seconds", List.of("Eat seconds (+ 1.20.5)", "-1 is disable"),-1.0, "EatSeconds", null),
+        MAX_STACK_SIZE("Integer", true, "Max Stack Size", List.of("Max Stack Size (+ 1.20.5)", "-1 is disable"),-1, "MaxStackSize", null),
         UUID("None", true, "", List.of("UUID"),null, "UUID", "UUID");
 
         private final String valueType;

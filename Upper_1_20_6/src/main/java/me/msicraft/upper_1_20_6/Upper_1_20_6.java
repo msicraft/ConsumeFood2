@@ -65,7 +65,7 @@ public class Upper_1_20_6 implements Wrapper {
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         //if ((boolean) customFood.getOptionValue(Food.Options.HIDE_POTION_EFFECT)) {}
-        if ((boolean) customFood.hasOption(Food.Options.HIDE_ADDITIONAL_TOOLTIP)) {
+        if ((boolean) customFood.getOptionValue(Food.Options.HIDE_ADDITIONAL_TOOLTIP)) {
             itemMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         }
         if ((boolean) customFood.getOptionValue(Food.Options.UNSTACKABLE)) {
@@ -94,7 +94,10 @@ public class Upper_1_20_6 implements Wrapper {
 
         itemMeta.setFood(foodComponent);
         if (customFood.hasOption(Food.Options.MAX_STACK_SIZE)) {
-            itemMeta.setMaxStackSize((int) customFood.getOptionValue(Food.Options.MAX_STACK_SIZE));
+            int maxStackSize = (int) customFood.getOptionValue(Food.Options.MAX_STACK_SIZE);
+            if (maxStackSize != -1) {
+                itemMeta.setMaxStackSize((int) customFood.getOptionValue(Food.Options.MAX_STACK_SIZE));
+            }
         }
         itemStack.setItemMeta(itemMeta);
 

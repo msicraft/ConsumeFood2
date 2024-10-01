@@ -84,8 +84,11 @@ public class CustomFoodManager {
         FileConfiguration config = customFoodData.getConfig();
         String path = "Food." + customFood.getInternalName() + "." + options.getPath();
         if (options == Food.Options.LORE || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND
-                || options == Food.Options.ENCHANT) {
+                || options == Food.Options.ENCHANT || options == Food.Options.MATERIAL) {
             switch (options) {
+                case MATERIAL -> {
+                    config.set(path, customFood.getMaterial().name().toUpperCase());
+                }
                 case LORE -> {
                     config.set(path, customFood.getLore());
                 }
@@ -355,6 +358,23 @@ public class CustomFoodManager {
     public void unregisterCustomFood(String internalName) {
         customFoodMap.remove(internalName);
         this.internalNames.remove(internalName);
+    }
+
+    public void createCustomFood(String internalName) {
+        CustomFood customFood = new CustomFood(Material.APPLE, internalName);
+        String path = "Food." + internalName;
+        customFoodData.getConfig().set(path + ".Material", "APPLE");
+        customFoodData.saveConfig();
+        registerCustomFood(customFood);
+    }
+
+    public void deleteCustomFood(String internalName) {
+        if (customFoodMap.containsKey(internalName)) {
+            String path = "Food." + internalName;
+            customFoodData.getConfig().set(path, null);
+            customFoodData.saveConfig();
+            unregisterCustomFood(internalName);
+        }
     }
 
     public ItemStack createItemStack(CustomFood customFood) {

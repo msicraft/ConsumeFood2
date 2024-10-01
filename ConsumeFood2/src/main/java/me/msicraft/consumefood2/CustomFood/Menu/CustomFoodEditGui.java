@@ -26,7 +26,7 @@ import java.util.List;
 public class CustomFoodEditGui extends CustomGui {
 
     public enum Type {
-        SELECT, EDIT
+        SELECT, EDIT, DELETE
     }
 
     private final Inventory gui;
@@ -34,6 +34,7 @@ public class CustomFoodEditGui extends CustomGui {
 
     private final NamespacedKey selectKey;
     private final NamespacedKey editKey;
+    private final NamespacedKey deleteKey;
 
     public CustomFoodEditGui(ConsumeFood2 plugin) {
         this.plugin = plugin;
@@ -41,6 +42,7 @@ public class CustomFoodEditGui extends CustomGui {
 
         this.selectKey = new NamespacedKey(plugin, "CustomFood_Select");
         this.editKey = new NamespacedKey(plugin, "CustomFood_Edit");
+        this.deleteKey = new NamespacedKey(plugin, "CustomFood_Delete");
     }
 
     public void setGui(Type type, Player player) {
@@ -52,6 +54,9 @@ public class CustomFoodEditGui extends CustomGui {
             case EDIT -> {
                 setEditGui(player);
             }
+            case DELETE -> {
+                setDeleteGui(player);
+            }
         }
     }
 
@@ -61,6 +66,10 @@ public class CustomFoodEditGui extends CustomGui {
         gui.setItem(50, itemStack);
         itemStack = GuiUtil.createItemStack(Material.ARROW, "Previous", GuiUtil.EMPTY_LORE, -1, selectKey, "Previous");
         gui.setItem(48, itemStack);
+        itemStack = GuiUtil.createItemStack(Material.CAULDRON, "Delete", GuiUtil.EMPTY_LORE, -1, selectKey, "Delete");
+        gui.setItem(45, itemStack);
+        itemStack = GuiUtil.createItemStack(Material.WRITABLE_BOOK, "Create", GuiUtil.EMPTY_LORE, -1, selectKey, "Create");
+        gui.setItem(53, itemStack);
 
         CustomFoodManager customFoodManager = plugin.getCustomFoodManager();
         PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
@@ -234,6 +243,7 @@ public class CustomFoodEditGui extends CustomGui {
                 }
                 case SOUND -> {
                     itemStack = new ItemStack(Material.JUKEBOX);
+                    lore.add(ChatColor.GRAY + "Format: <sound>:<volume>:<pitch>");
                     lore.add(ChatColor.GRAY + "Current Sound: " + customFood.getOptionValue(Food.Options.SOUND));
                 }
                 case POTION_COLOR -> {
@@ -293,12 +303,61 @@ public class CustomFoodEditGui extends CustomGui {
         }
     }
 
+    private void setDeleteGui(Player player) {
+        ItemStack itemStack;
+        itemStack = GuiUtil.createItemStack(Material.ARROW, "Next", GuiUtil.EMPTY_LORE, -1, deleteKey, "Next");
+        gui.setItem(50, itemStack);
+        itemStack = GuiUtil.createItemStack(Material.ARROW, "Previous", GuiUtil.EMPTY_LORE, -1, deleteKey, "Previous");
+        gui.setItem(48, itemStack);
+        itemStack = GuiUtil.createItemStack(Material.BARRIER, ChatColor.WHITE + "Back", GuiUtil.EMPTY_LORE,
+                -1, deleteKey, "Back");
+        gui.setItem(45, itemStack);
+
+        CustomFoodManager customFoodManager = plugin.getCustomFoodManager();
+        PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
+
+        List<String> internalNames = customFoodManager.getAllInternalNames();
+        int maxSize = internalNames.size();
+        int page = (int) playerData.getTempData("CustomFood_Delete_Select_Page", 0);
+        int guiCount = 0;
+        int lastCount = page * 45;
+
+        String pageS = "Page: " + (page + 1) + "/" + ((maxSize / 45) + 1);
+        itemStack = GuiUtil.createItemStack(Material.BOOK, pageS, GuiUtil.EMPTY_LORE, -1, selectKey, "Page");
+        gui.setItem(49, itemStack);
+
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.YELLOW + "Left Click: delete");
+        for (int a = lastCount; a < maxSize; a++) {
+            String internalName = internalNames.get(a);
+            CustomFood customFood = customFoodManager.getCustomFood(internalName);
+            if (customFood != null) {
+                itemStack = customFood.getGuiItemStack(plugin.isUseFoodComponent());
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+                itemMeta.setLore(lore);
+                dataContainer.set(deleteKey, PersistentDataType.STRING, internalName);
+
+                itemStack.setItemMeta(itemMeta);
+                gui.setItem(guiCount, itemStack);
+                guiCount++;
+                if (guiCount >= 45) {
+                    break;
+                }
+            }
+        }
+    }
+
     public NamespacedKey getSelectKey() {
         return selectKey;
     }
 
     public NamespacedKey getEditKey() {
         return editKey;
+    }
+
+    public NamespacedKey getDeleteKey() {
+        return deleteKey;
     }
 
     @NotNull

@@ -40,9 +40,9 @@ public class CustomFoodEditEvent implements Listener {
     public void customFoodGuiChatEditEvent(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
+        CustomFoodManager customFoodManager = plugin.getCustomFoodManager();
         if (playerData.hasTempData("CustomFood_ChatEdit")) {
             e.setCancelled(true);
-            CustomFoodManager customFoodManager = plugin.getCustomFoodManager();
             if (!playerData.hasTempData("CustomFood_Edit_Key")) {
                 player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "internalName does not exist");
                 playerData.removeTempData("CustomFood_ChatEdit");
@@ -178,6 +178,25 @@ public class CustomFoodEditEvent implements Listener {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.EDIT, player);
             });
+        } else if (playerData.hasTempData("CustomFood_Create")) {
+            e.setCancelled(true);
+            String message = e.getMessage();
+            if (message.equals("cancel")) {
+                playerData.removeTempData("CustomFood_Create");
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.SELECT, player);
+                });
+                return;
+            }
+            if (!customFoodManager.hasCustomFood(message)) {
+                customFoodManager.createCustomFood(message);
+            } else {
+                player.sendMessage(ChatColor.RED + "This internalname already exists");
+            }
+            playerData.removeTempData("CustomFood_Create");
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.SELECT, player);
+            });
         }
     }
 
@@ -206,6 +225,7 @@ public class CustomFoodEditEvent implements Listener {
             CustomFoodManager customFoodManager = plugin.getCustomFoodManager();
             NamespacedKey selectKey = customFoodEditGui.getSelectKey();
             NamespacedKey editKey = customFoodEditGui.getEditKey();
+            NamespacedKey deleteKey = customFoodEditGui.getDeleteKey();
             if (dataContainer.has(selectKey, PersistentDataType.STRING)) {
                 String data = dataContainer.get(selectKey, PersistentDataType.STRING);
                 if (data != null) {
@@ -227,6 +247,17 @@ public class CustomFoodEditEvent implements Listener {
                             }
                             playerData.setTempData("CustomFood_Select_Page", previous);
                             customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.SELECT, player);
+                        }
+                        case "Create" -> {
+                            player.sendMessage(ChatColor.GRAY + "========================================");
+                            player.sendMessage(ChatColor.GRAY + "Please enter the internalname");
+                            player.sendMessage(ChatColor.GRAY + "Cancel when entering 'cancel'");
+                            player.sendMessage(ChatColor.GRAY + "========================================");
+                            playerData.setTempData("CustomFood_Create","none");
+                            player.closeInventory();
+                        }
+                        case "Delete" -> {
+                            customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.DELETE, player);
                         }
                         case "Page" -> {}
                         default -> {
@@ -593,6 +624,38 @@ public class CustomFoodEditEvent implements Listener {
                                 playerData.setTempData("CustomFood_Edit_Key", internalName);
                                 customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.EDIT, player);
                             }
+                        }
+                    }
+                }
+            } else if (dataContainer.has(deleteKey, PersistentDataType.STRING)) {
+                String data = dataContainer.get(deleteKey, PersistentDataType.STRING);
+                if (data != null) {
+                    int maxSize = customFoodManager.getAllInternalNames().size();
+                    int current = (int) playerData.getTempData("CustomFood_Delete_Select_Page", 1);
+                    switch (data) {
+                        case "Next" -> {
+                            int next = current + 1;
+                            if (next > maxSize / 45) {
+                                next = 0;
+                            }
+                            playerData.setTempData("CustomFood_Delete_Select_Page", next);
+                            customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.DELETE, player);
+                        }
+                        case "Previous" -> {
+                            int previous = current - 1;
+                            if (previous < 0) {
+                                previous = maxSize / 45;
+                            }
+                            playerData.setTempData("CustomFood_Delete_Select_Page", previous);
+                            customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.DELETE, player);
+                        }
+                        case "Back" -> {
+                            customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.SELECT, player);
+                        }
+                        case "Page" -> {}
+                        default -> {
+                            customFoodManager.deleteCustomFood(data);
+                            customFoodManager.openCustomFoodEditGui(CustomFoodEditGui.Type.DELETE, player);
                         }
                     }
                 }
