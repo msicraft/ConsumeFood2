@@ -29,7 +29,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.1</version>
                 <configuration>
-                    <outputDirectory>B:\플러그인\ConsumeFood2\1.0</outputDirectory>
+                    <outputDirectory>B:\Bukkit\1.20.6 paper test\plugins</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>

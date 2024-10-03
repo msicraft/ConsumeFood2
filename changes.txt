@@ -1,3 +1,11 @@
+v1.1 dev-1 {
+    - Version changed to 1.1
+    - Added spigot resource update notifications
+    - Displayed in console when running development version
+
+    - Fixed an issue where the Duration value of a PotionEffect would not change to the new format when migrating
+}
+
 v1.0 dev-4 {
 
     - Added migration feature from ConsumeFood 1 to 2 for CustomFood and VanillaFood

@@ -44,7 +44,9 @@ public class MigrationUtil {
                     case POTION_EFFECT -> {
                         oldConfig.getStringList(oldPath).forEach(format -> {
                             try {
-                                FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(format);
+                                String[] a = format.split(":");
+                                String c = a[0] + ":" + a[1] + ":" + (Integer.parseInt(a[2]) * 20) + ":" + a[3];
+                                FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(c);
                                 vanillaFood.addPotionEffect(foodPotionEffect);
                             } catch (InvalidFormat | UnknownPotionEffectType e) {
                                 e.printStackTrace();
@@ -118,7 +120,9 @@ public class MigrationUtil {
                     case POTION_EFFECT -> {
                         oldConfig.getStringList(oldPath).forEach(format -> {
                             try {
-                                FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(format);
+                                String[] a = format.split(":");
+                                String c = a[0] + ":" + a[1] + ":" + (Integer.parseInt(a[2]) * 20) + ":" + a[3];
+                                FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(c);
                                 customFood.addPotionEffect(foodPotionEffect);
                             } catch (InvalidFormat | UnknownPotionEffectType e) {
                                 e.printStackTrace();

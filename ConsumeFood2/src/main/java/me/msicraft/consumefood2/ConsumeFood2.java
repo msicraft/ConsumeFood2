@@ -62,7 +62,7 @@ public final class ConsumeFood2 extends JavaPlugin {
             }
         }
 
-        BukkitChecker bukkitChecker = new BukkitChecker(this, -1);
+        BukkitChecker bukkitChecker = new BukkitChecker(this, 119951);
         String bukkitVersion = bukkitChecker.getBukkitVersion();
         if (bukkitVersion == null) {
             getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.RED + "Bukkit version not found");
@@ -75,18 +75,6 @@ public final class ConsumeFood2 extends JavaPlugin {
                 useFoodComponent = true;
             }
         }
-
-        /*
-        bukkitChecker.getPluginUpdateCheck(version -> {
-            if (this.getDescription().getVersion().equals(version)) {
-                getLogger().info("There is not a new update available.");
-            } else {
-                getLogger().info("A new version of the plugin is available: (v." + version + "), Current: v." + getDescription().getVersion());
-                //getLogger().info("If the current version is higher, it is the development version.");
-            }
-        });
-
-         */
 
         messageData = new MessageData(this);
 
@@ -109,9 +97,21 @@ public final class ConsumeFood2 extends JavaPlugin {
 
         reloadVariables();
 
+        getServer().getConsoleSender().sendMessage(PREFIX + "Plugin Enable");
+
+        bukkitChecker.getPluginUpdateCheck(version -> {
+            if (version.contains("dev")) {
+                getLogger().info("Running the development version");
+            }
+            if (this.getDescription().getVersion().equals(version)) {
+                getLogger().info("There is not a new update available.");
+            } else {
+                getLogger().info("A new version of the plugin is available: (v." + version + "), Current: v." + getDescription().getVersion());
+                //getLogger().info("If the current version is higher, it is the development version.");
+            }
+        });
         Metrics metrics = new Metrics(this, 23298);
         getLogger().info("Enabled metrics. You may opt-out by changing plugins/bStats/config.yml");
-        getServer().getConsoleSender().sendMessage(PREFIX + "Plugin Enable");
     }
 
     @Override
