@@ -7,35 +7,39 @@ import java.util.*;
 
 public abstract class Food {
 
-    public enum Options {
-        MATERIAL("Material", false, "Material", List.of("Food Material"), Material.APPLE, "Material", "Material"),
-        TEXTURE_VALUE("String", true, "Texture Value", List.of("Texture value when Material is Player_Head"), "", "TextureValue", "TextureValue"),
-        DISPLAYNAME("String", true, "Display Name", List.of("DisplayName of the item"),null, "DisplayName", "Name"),
-        CUSTOM_MODEL_DATA("Integer", true, "Custom Model Data", List.of("CustomModelData"), -1, "CustomModelData", "Data"),
-        LORE("None", true, "Lore", List.of("The lore of the item"),null, "Lore", "Lore"),
-        POTION_EFFECT("None", false, "Potion Effect", List.of("Potion effects applied when consumed"), null, "PotionEffect", "PotionEffect"),
-        COMMAND("None", false, "Command", List.of("Execute commands applied when consumed"), null, "Command", "Command"),
-        FOOD_LEVEL("Integer", false, "Food Level", List.of("Amount of food level restored when consumed"),0, "FoodLevel", "FoodLevel"),
-        SATURATION("Double", false, "Saturation", List.of("Amount of saturation restored when consumed"),0.0, "Saturation", "Saturation"),
-        COOLDOWN("Double", false, "Personal CoolDown", List.of("The value used when the value of CooldownType is personal."), 0.0, "CoolDown", "Cooldown"),
-        ENCHANT("None", true, "Enchant", List.of("List of enchantments to be applied to items"),null, "Enchant", "Enchant"),
-        HIDE_ENCHANT("Boolean", true, "Hide Enchant", List.of("Whether or not the item is enchanted"),false, "HideEnchant", "HideEnchant"),
-        DISABLE_CRAFTING("Boolean", true, "Disable Crafting", List.of("Prevent crafting of item"),false, "DisableCrafting", "DisableCrafting"),
-        DISABLE_SMELTING("Boolean", true, "Disable Smelting", List.of("Prevent smelting of item"),false, "DisableSmelting", "DisableSmelting"),
-        DISABLE_ANVIL("Boolean", true, "Disable Anvil", List.of("Prevent anvil of item"),false, "DisableAnvil", "DisableAnvil"),
-        DISABLE_ENCHANT("Boolean", true, "Disable Enchant", List.of("Prevent enchant of item"),false, "DisableEnchant", "DisableEnchant"),
-        SOUND("String", true, "Sound", List.of("Sound to be played when consumed"),null, "Sound", "Sound"),
-        POTION_COLOR("String", true, "PotionColor", List.of("Value used when the material is a potion"),"#ffffff", "PotionColor", "PotionColor"),
-        HIDE_POTION_EFFECT("Boolean", true, "Hide PotionEffect", List.of("Whether or not the item is potion effect"),false, "HidePotionEffect", "HidePotionEffect"),
-        HIDE_ADDITIONAL_TOOLTIP("Boolean", true, "Hide Additional Tooltip", List.of("Hide potion effects, book and firework information, map tooltips, patterns of banners (+ 1.20.5)"),false, "HideAdditionalTooltip", null),
-        UNSTACKABLE("Boolean", true, "UnStackable", List.of("Prevent stacking of items"),false, "UnStackable", "Unstackable"),
-        INSTANT_EAT("Boolean", false, "Instant Eat", List.of("Right click to eat the item immediately"),false, "InstantEat", null),
-        ALWAYS_EAT("Boolean", true, "Always Eat", List.of("Can eat anytime (+ 1.20.5)"),false, "AlwaysEat", null),
-        EAT_SECONDS("Double", true, "Eat Seconds", List.of("Eat seconds (+ 1.20.5)", "-1 is disable"),-1.0, "EatSeconds", null),
-        MAX_STACK_SIZE("Integer", true, "Max Stack Size", List.of("Max Stack Size (+ 1.20.5)", "-1 is disable"),-1, "MaxStackSize", null),
-        UUID("None", true, "", List.of("UUID"),null, "UUID", "UUID");
+    public enum ValueType {
+        MATERIAL, STRING, INTEGER, DOUBLE, BOOLEAN, NONE
+    }
 
-        private final String valueType;
+    public enum Options {
+        MATERIAL(ValueType.MATERIAL, false, "Material", List.of("Food Material"), Material.APPLE, "Material", "Material"),
+        TEXTURE_VALUE(ValueType.STRING, true, "Texture Value", List.of("Texture value when Material is Player_Head"), "", "TextureValue", "TextureValue"),
+        DISPLAYNAME(ValueType.STRING, true, "Display Name", List.of("DisplayName of the item"),null, "DisplayName", "Name"),
+        CUSTOM_MODEL_DATA(ValueType.INTEGER, true, "Custom Model Data", List.of("CustomModelData"), -1, "CustomModelData", "Data"),
+        LORE(ValueType.NONE, true, "Lore", List.of("The lore of the item"),null, "Lore", "Lore"),
+        POTION_EFFECT(ValueType.NONE, false, "Potion Effect", List.of("Potion effects applied when consumed"), null, "PotionEffect", "PotionEffect"),
+        COMMAND(ValueType.NONE, false, "Command", List.of("Execute commands applied when consumed"), null, "Command", "Command"),
+        FOOD_LEVEL(ValueType.INTEGER, false, "Food Level", List.of("Amount of food level restored when consumed"),0, "FoodLevel", "FoodLevel"),
+        SATURATION(ValueType.DOUBLE, false, "Saturation", List.of("Amount of saturation restored when consumed"),0.0, "Saturation", "Saturation"),
+        COOLDOWN(ValueType.DOUBLE, false, "Personal CoolDown", List.of("The value used when the value of CooldownType is personal."), 0.0, "CoolDown", "Cooldown"),
+        ENCHANT(ValueType.NONE, true, "Enchant", List.of("List of enchantments to be applied to items"),null, "Enchant", "Enchant"),
+        HIDE_ENCHANT(ValueType.BOOLEAN, true, "Hide Enchant", List.of("Whether or not the item is enchanted"),false, "HideEnchant", "HideEnchant"),
+        DISABLE_CRAFTING(ValueType.BOOLEAN, true, "Disable Crafting", List.of("Prevent crafting of item"),false, "DisableCrafting", "DisableCrafting"),
+        DISABLE_SMELTING(ValueType.BOOLEAN, true, "Disable Smelting", List.of("Prevent smelting of item"),false, "DisableSmelting", "DisableSmelting"),
+        DISABLE_ANVIL(ValueType.BOOLEAN, true, "Disable Anvil", List.of("Prevent anvil of item"),false, "DisableAnvil", "DisableAnvil"),
+        DISABLE_ENCHANT(ValueType.BOOLEAN, true, "Disable Enchant", List.of("Prevent enchant of item"),false, "DisableEnchant", "DisableEnchant"),
+        SOUND(ValueType.STRING, true, "Sound", List.of("Sound to be played when consumed"),null, "Sound", "Sound"),
+        POTION_COLOR(ValueType.STRING, true, "PotionColor", List.of("Value used when the material is a potion"),"#ffffff", "PotionColor", "PotionColor"),
+        HIDE_POTION_EFFECT(ValueType.BOOLEAN, true, "Hide PotionEffect", List.of("Whether or not the item is potion effect"),false, "HidePotionEffect", "HidePotionEffect"),
+        HIDE_ADDITIONAL_TOOLTIP(ValueType.BOOLEAN, true, "Hide Additional Tooltip", List.of("Hide potion effects, book and firework information, map tooltips, patterns of banners (+ 1.20.5)"),false, "HideAdditionalTooltip", null),
+        UNSTACKABLE(ValueType.BOOLEAN, true, "UnStackable", List.of("Prevent stacking of items"),false, "UnStackable", "Unstackable"),
+        INSTANT_EAT(ValueType.BOOLEAN, false, "Instant Eat", List.of("Right click to eat the item immediately"),false, "InstantEat", null),
+        ALWAYS_EAT(ValueType.BOOLEAN, true, "Always Eat", List.of("Can eat anytime (+ 1.20.5)"),false, "AlwaysEat", null),
+        EAT_SECONDS(ValueType.DOUBLE, true, "Eat Seconds", List.of("Eat seconds (+ 1.20.5)", "-1 is disable"),-1.0, "EatSeconds", null),
+        MAX_STACK_SIZE(ValueType.INTEGER, true, "Max Stack Size", List.of("Max Stack Size (+ 1.20.5)", "-1 is disable"),-1, "MaxStackSize", null),
+        UUID(ValueType.NONE, true, "", List.of("UUID"),null, "UUID", "UUID");
+
+        private final ValueType valueType;
         private final boolean isCustomFoodOption;
         private final String displayName;
         private final List<String> description;
@@ -43,7 +47,7 @@ public abstract class Food {
         private final String path;
         private final String oldPath;
 
-        Options(String valueType, boolean isCustomFoodOption, String displayName, List<String> description, Object baseValue, String path, String oldPath) {
+        Options(ValueType valueType, boolean isCustomFoodOption, String displayName, List<String> description, Object baseValue, String path, String oldPath) {
             this.valueType = valueType;
             this.isCustomFoodOption = isCustomFoodOption;
             this.displayName = displayName;
@@ -53,7 +57,7 @@ public abstract class Food {
             this.oldPath = oldPath;
         }
 
-        public String getValueType() {
+        public ValueType getValueType() {
             return valueType;
         }
 
