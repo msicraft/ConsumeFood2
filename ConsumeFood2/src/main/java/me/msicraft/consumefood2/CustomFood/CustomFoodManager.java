@@ -6,6 +6,8 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.Common;
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.CustomEvent.CustomFoodConsumeEvent;
+import me.msicraft.API.CustomException.InvalidFormat;
+import me.msicraft.API.CustomException.UnknownPotionEffectType;
 import me.msicraft.API.Data.CustomGui;
 import me.msicraft.API.Food.*;
 import me.msicraft.consumefood2.ConsumeFood2;
@@ -13,6 +15,7 @@ import me.msicraft.consumefood2.CustomFood.File.CustomFoodData;
 import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
 import me.msicraft.consumefood2.PlayerData.Data.PlayerData;
 import me.msicraft.consumefood2.Utils.GuiUtil;
+import me.msicraft.consumefood2.Utils.MessageUtil;
 import me.msicraft.upper_1_20_6.Upper_1_20_6;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,10 +29,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.regex.PatternSyntaxException;
 
 public class CustomFoodManager {
 
@@ -140,10 +141,12 @@ public class CustomFoodManager {
                 String materialName = config.getString(path + ".Material");
                 if (materialName == null) {
                     materialName = "APPLE";
+                    MessageUtil.sendErrorMessage(MessageUtil.FoodType.CUSTOMFOOD, "Material does not exist. The default APPLE is used", internalName);
                 }
                 Material material = Material.getMaterial(materialName.toUpperCase());
                 if (material == null) {
                     material = Material.APPLE;
+                    MessageUtil.sendErrorMessage(MessageUtil.FoodType.CUSTOMFOOD, "Invalid Material", internalName);
                 }
                 CustomFood customFood;
                 if (customFoodMap.containsKey(internalName)) {
@@ -162,15 +165,29 @@ public class CustomFoodManager {
                     }
                     customFood.setOption(Food.Options.UUID, UUID.fromString(uuidS));
                 }
-                for (Food.Options options : foodOptions) {
-                    if (options == Food.Options.MATERIAL || options == Food.Options.TEXTURE_VALUE
-                            || options == Food.Options.LORE || options == Food.Options.ENCHANT
-                            || options == Food.Options.UUID || options == Food.Options.POTION_EFFECT || options == Food.Options.COMMAND) {
+                for (Food.Options option : foodOptions) {
+                    if (option == Food.Options.MATERIAL || option == Food.Options.TEXTURE_VALUE
+                            || option == Food.Options.LORE || option == Food.Options.ENCHANT
+                            || option == Food.Options.UUID || option == Food.Options.POTION_EFFECT || option == Food.Options.COMMAND) {
                         continue;
                     }
-                    String p = path + "." + options.getPath();
+                    String p = path + "." + option.getPath();
                     if (config.contains(p)) {
-                        customFood.setOption(options, config.get(p, options.getBaseValue()));
+                        Food.ValueType valueType = option.getValueType();
+                        switch (valueType) {
+                            case STRING -> {
+                                customFood.setOption(option, config.getString(p, (String) option.getBaseValue()));
+                            }
+                            case INTEGER -> {
+                                customFood.setOption(option, config.getInt(p, (int) option.getBaseValue()));
+                            }
+                            case DOUBLE -> {
+                                customFood.setOption(option, config.getDouble(p, (double) option.getBaseValue()));
+                            }
+                            case BOOLEAN -> {
+                                customFood.setOption(option, config.getBoolean(p, (boolean) option.getBaseValue()));
+                            }
+                        }
                     }
                 }
 
@@ -188,13 +205,15 @@ public class CustomFoodManager {
                             String[] a = format.split(":");
                             String enchantS = a[0];
                             Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantS));
-                            int level = Integer.parseInt(a[1]);
-                            customFood.addEnchantment(enchantment, level);
+                            if (enchantment == null) {
+                                MessageUtil.sendErrorMessage(MessageUtil.FoodType.CUSTOMFOOD, "Invalid Enchantment", internalName, "Line: " + format);
+                            } else {
+                                int level = Integer.parseInt(a[1]);
+                                customFood.addEnchantment(enchantment, level);
+                            }
                         } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Enchant format=====");
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "InternalName: " + internalName);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <enchant>:<level>");
+                            MessageUtil.sendErrorMessage(MessageUtil.FoodType.CUSTOMFOOD, "Invalid Enchant Format", internalName,
+                                    "Line: " + format, "Format: <enchant>:<level>");
                         }
                     });
                 }
@@ -203,24 +222,12 @@ public class CustomFoodManager {
                 List<String> potionEffectList = config.getStringList(path + ".PotionEffect");
                 potionEffectList.forEach(format -> {
                     try {
-                        String[] split = format.split(":");
-                        PotionEffectType potionEffectType = PotionEffectType.getByName(split[0].toUpperCase());
-                        if (potionEffectType != null) {
-                            int level = Integer.parseInt(split[1]);
-                            int duration = Integer.parseInt(split[2]);
-                            double chance = Double.parseDouble(split[3]);
-                            FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffectType, level, duration, chance);
-                            customFood.addPotionEffect(foodPotionEffect);
-                        } else {
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown PotionEffectType=====");
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "CustomFood: " + internalName);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "PotionEffectType: " + split[0]);
-                        }
-                    } catch (NullPointerException | PatternSyntaxException | ArrayIndexOutOfBoundsException e) {
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid PotionEffect Format=====");
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "CustomFood: " + internalName);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <potionType>:<level>:<duration>:<chance>");
+                        FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(format);
+                        customFood.addPotionEffect(foodPotionEffect);
+                    } catch (UnknownPotionEffectType | InvalidFormat e) {
+                        MessageUtil.sendErrorMessage(MessageUtil.FoodType.CUSTOMFOOD, "Invalid PotionEffect", internalName,
+                                "Line: " + format, "Format: <PotionEffectType>:<level>:<duration>:<chance>");
+                        //e.printStackTrace();
                     }
                 });
 
@@ -228,16 +235,12 @@ public class CustomFoodManager {
                 List<String> commandList = config.getStringList(path + ".Command");
                 commandList.forEach(format -> {
                     try {
-                        String[] split = format.split(":");
-                        FoodCommand.ExecuteType executeType = FoodCommand.ExecuteType.valueOf(split[0].toUpperCase());
-                        String command = split[1];
-                        FoodCommand foodCommand = new FoodCommand(command, executeType);
+                        FoodCommand foodCommand = Common.getInstance().formatToFoodCommand(format);
                         customFood.addCommand(foodCommand);
-                    } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Command Format=====");
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "CustomFood: " + internalName);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <executeType>:<command>");
+                    } catch (InvalidFormat e) {
+                        MessageUtil.sendErrorMessage(MessageUtil.FoodType.VANILLAFOOD, "Invalid ExecuteCommand", internalName,
+                                "Line: " + format, "Format: <executeType>:<command>");
+                        //e.printStackTrace();
                     }
                 });
 

@@ -68,7 +68,7 @@ Food:
     Command:
   COOKED_COD:
     FoodLevel: 5
-    Saturation: 6
+    Saturation: 6.0
     InstantEat: false
     PotionEffect:
     Command:
@@ -225,7 +225,7 @@ Food:
     Command:
   SWEET_BERRIES:
     FoodLevel: 1
-    Saturation: 0
+    Saturation: 0.0
     InstantEat: false
     PotionEffect:
     Command:

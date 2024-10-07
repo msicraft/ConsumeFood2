@@ -1,7 +1,6 @@
 package me.msicraft.consumefood2.Utils;
 
 import me.msicraft.API.Common;
-import me.msicraft.API.Data.CustomGui;
 import me.msicraft.consumefood2.ConsumeFood2;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

@@ -24,10 +24,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.regex.PatternSyntaxException;
 
 public class VanillaFoodManager {
 
@@ -98,7 +96,7 @@ public class VanillaFoodManager {
                     try {
                         VanillaFood.Type type = VanillaFood.Type.valueOf(material.name());
                     } catch (IllegalArgumentException e) {
-                        MessageUtil.sendErrorMessage(MessageUtil.FoodType.VANILLAFOOD, "VanillaFood Type does not exist", key);
+                        MessageUtil.sendErrorMessage(MessageUtil.FoodType.VANILLAFOOD, "Type does not exist", key);
                         continue;
                     }
                 }
@@ -142,9 +140,9 @@ public class VanillaFoodManager {
                         FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(format);
                         vanillaFood.addPotionEffect(foodPotionEffect);
                     } catch (UnknownPotionEffectType | InvalidFormat e) {
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====Invalid PotionEffect=====");
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                        e.printStackTrace();
+                        MessageUtil.sendErrorMessage(MessageUtil.FoodType.VANILLAFOOD, "Invalid PotionEffect", key,
+                                "Line: " + format, "Format: <PotionEffectType>:<level>:<duration>:<chance>");
+                        //e.printStackTrace();
                     }
                 });
 
@@ -155,9 +153,9 @@ public class VanillaFoodManager {
                         FoodCommand foodCommand = Common.getInstance().formatToFoodCommand(format);
                         vanillaFood.addCommand(foodCommand);
                     } catch (InvalidFormat e) {
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====Invalid ExecuteCommand=====");
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                        e.printStackTrace();
+                        MessageUtil.sendErrorMessage(MessageUtil.FoodType.VANILLAFOOD, "Invalid ExecuteCommand", key,
+                                "Line: " + format, "Format: <executeType>:<command>");
+                        //e.printStackTrace();
                     }
                 });
 

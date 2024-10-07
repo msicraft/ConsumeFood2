@@ -1,8 +1,11 @@
 v1.1 dev-1 {
     - Version changed to 1.1
     - Added spigot resource update notifications
+    - Added missing VanillaFood Type
     - Displayed in console when running development version
-
+    - In the FoodPotionEffect format, <duration> has been changed to allow seconds values as well. (ex. saturation:1:5s:0.5 = saturation:1:100:50%)
+    - In the FoodPotionEffect format, <chance> has been changed to allow integer values as well. (ex. saturation:1:100:50% = saturation:1:100:0.5)
+    - An error message about invalid format will be displayed with more detailed information.
     - Fixed an issue where the Duration value of a PotionEffect would not change to the new format when migrating
 }
 

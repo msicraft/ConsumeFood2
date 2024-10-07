@@ -41,7 +41,15 @@ public class Common {
             PotionEffectType potionEffectType = PotionEffectType.getByName(split[0].toUpperCase());
             if (potionEffectType != null) {
                 int level = Integer.parseInt(split[1]);
-                int duration = Integer.parseInt(split[2]);
+                int duration;
+                String durationS = split[2];
+                if (durationS.contains("s")) {
+                    durationS = durationS.replace("s", "");
+                    durationS = durationS.replaceAll("[^0-9]", "");
+                    duration = Integer.parseInt(durationS) * 20;
+                } else {
+                    duration = Integer.parseInt(split[2]);
+                }
                 String chanceS = split[3];
                 double chance = 1.0;
                 if (chanceS.contains("%")) {
@@ -50,8 +58,7 @@ public class Common {
                     int i = Integer.parseInt(chanceS);
                     if (i > 100) {
                         i = 100;
-                    }
-                    if (i < 0) {
+                    } else if (i < 0) {
                         i = 0;
                         chance = 0.0;
                     }
