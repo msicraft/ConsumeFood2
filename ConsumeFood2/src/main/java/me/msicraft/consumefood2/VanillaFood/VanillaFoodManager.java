@@ -1,8 +1,11 @@
 package me.msicraft.consumefood2.VanillaFood;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.msicraft.API.Common;
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.CustomEvent.VanillaFoodConsumeEvent;
+import me.msicraft.API.CustomException.InvalidFormat;
+import me.msicraft.API.CustomException.UnknownPotionEffectType;
 import me.msicraft.API.Data.CustomGui;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.FoodCommand;
@@ -10,6 +13,7 @@ import me.msicraft.API.Food.FoodPotionEffect;
 import me.msicraft.API.Food.VanillaFood;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.PlayerData.Data.PlayerData;
+import me.msicraft.consumefood2.Utils.MessageUtil;
 import me.msicraft.consumefood2.VanillaFood.File.VanillaFoodData;
 import me.msicraft.consumefood2.VanillaFood.Menu.VanillaFoodEditGui;
 import org.bukkit.Bukkit;
@@ -53,7 +57,7 @@ public class VanillaFoodManager {
                 this.coolDownType = CoolDownType.valueOf(cooldownTypeS.toUpperCase());
             } catch (IllegalArgumentException e) {
                 this.coolDownType = CoolDownType.DISABLE;
-                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====Invalid CoolDown Type=====");
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====Invalid VanillaFood CoolDown Type=====");
                 Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid: " + cooldownTypeS);
                 Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Default value of 'disable' is used");
             }
@@ -88,9 +92,15 @@ public class VanillaFoodManager {
             for (String key : keys) {
                 Material material = Material.getMaterial(key.toUpperCase());
                 if (material == null) {
-                    Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown VanillaFood Material=====");
-                    Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid Material: " + key);
+                    MessageUtil.sendErrorMessage(MessageUtil.FoodType.VANILLAFOOD, "Invalid Material", key);
                     continue;
+                } else {
+                    try {
+                        VanillaFood.Type type = VanillaFood.Type.valueOf(material.name());
+                    } catch (IllegalArgumentException e) {
+                        MessageUtil.sendErrorMessage(MessageUtil.FoodType.VANILLAFOOD, "VanillaFood Type does not exist", key);
+                        continue;
+                    }
                 }
                 VanillaFood vanillaFood;
                 if (vanillaFoodMap.containsKey(material)) {
@@ -106,7 +116,21 @@ public class VanillaFoodManager {
                     if (!option.isCustomFoodOption()) {
                         String p = path + "." + option.getPath();
                         if (config.contains(p)) {
-                            vanillaFood.setOption(option, config.get(p, option.getBaseValue()));
+                            Food.ValueType valueType = option.getValueType();
+                            switch (valueType) {
+                                case STRING -> {
+                                    vanillaFood.setOption(option, config.getString(p, (String) option.getBaseValue()));
+                                }
+                                case INTEGER -> {
+                                    vanillaFood.setOption(option, config.getInt(p, (int) option.getBaseValue()));
+                                }
+                                case DOUBLE -> {
+                                    vanillaFood.setOption(option, config.getDouble(p, (double) option.getBaseValue()));
+                                }
+                                case BOOLEAN -> {
+                                    vanillaFood.setOption(option, config.getBoolean(p, (boolean) option.getBaseValue()));
+                                }
+                            }
                         }
                     }
                 }
@@ -115,24 +139,12 @@ public class VanillaFoodManager {
                 List<String> potionEffectList = config.getStringList(path + ".PotionEffect");
                 potionEffectList.forEach(format -> {
                     try {
-                        String[] split = format.split(":");
-                        PotionEffectType potionEffectType = PotionEffectType.getByName(split[0].toUpperCase());
-                        if (potionEffectType != null) {
-                            int level = Integer.parseInt(split[1]);
-                            int duration = Integer.parseInt(split[2]);
-                            double chance = Double.parseDouble(split[3]);
-                            FoodPotionEffect foodPotionEffect = new FoodPotionEffect(potionEffectType, level, duration, chance);
-                            vanillaFood.addPotionEffect(foodPotionEffect);
-                        } else {
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Unknown PotionEffectType=====");
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                            Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "PotionEffectType: " + split[0]);
-                        }
-                    } catch (NullPointerException | PatternSyntaxException | ArrayIndexOutOfBoundsException e) {
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid PotionEffect Format=====");
+                        FoodPotionEffect foodPotionEffect = Common.getInstance().formatToFoodPotionEffect(format);
+                        vanillaFood.addPotionEffect(foodPotionEffect);
+                    } catch (UnknownPotionEffectType | InvalidFormat e) {
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====Invalid PotionEffect=====");
                         Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <potionType>:<level>:<duration>:<chance>");
+                        e.printStackTrace();
                     }
                 });
 
@@ -140,16 +152,12 @@ public class VanillaFoodManager {
                 List<String> commandList = config.getStringList(path + ".Command");
                 commandList.forEach(format -> {
                     try {
-                        String[] split = format.split(":");
-                        FoodCommand.ExecuteType executeType = FoodCommand.ExecuteType.valueOf(split[0].toUpperCase());
-                        String command = split[1];
-                        FoodCommand foodCommand = new FoodCommand(command, executeType);
+                        FoodCommand foodCommand = Common.getInstance().formatToFoodCommand(format);
                         vanillaFood.addCommand(foodCommand);
-                    } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Command Format=====");
+                    } catch (InvalidFormat e) {
+                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====Invalid ExecuteCommand=====");
                         Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "VanillaFood: " + key);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid line: " + format);
-                        Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <executeType>:<command>");
+                        e.printStackTrace();
                     }
                 });
 

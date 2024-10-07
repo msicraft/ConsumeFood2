@@ -1,10 +1,17 @@
 package me.msicraft.consumefood2.Utils;
 
 import me.msicraft.API.Common;
+import me.msicraft.API.Data.CustomGui;
 import me.msicraft.consumefood2.ConsumeFood2;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class MessageUtil {
+
+    public enum FoodType {
+        VANILLAFOOD, CUSTOMFOOD
+    }
 
     private MessageUtil() {
     }
@@ -24,6 +31,25 @@ public class MessageUtil {
         String message = getConfigMessage(messagePath, true);
         if (message != null && !message.isEmpty()) {
             sender.sendMessage(message);
+        }
+    }
+
+    public static void sendErrorMessage(FoodType foodType, String errorType, String invalidKey, String... extraMessage) {
+        switch (foodType) {
+            case VANILLAFOOD -> {
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====VanillaFood " + errorType + "=====");
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid Material: " + invalidKey);
+                for (String em : extraMessage) {
+                    Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + em);
+                }
+            }
+            case CUSTOMFOOD -> {
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "=====CustomFood " + errorType + "=====");
+                Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Invalid InternalName: " + invalidKey);
+                for (String em : extraMessage) {
+                    Bukkit.getConsoleSender().sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + em);
+                }
+            }
         }
     }
 

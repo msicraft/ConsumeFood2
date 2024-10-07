@@ -42,7 +42,31 @@ public class Common {
             if (potionEffectType != null) {
                 int level = Integer.parseInt(split[1]);
                 int duration = Integer.parseInt(split[2]);
-                double chance = Double.parseDouble(split[3]);
+                String chanceS = split[3];
+                double chance = 1.0;
+                if (chanceS.contains("%")) {
+                    chanceS = chanceS.replace("%", "");
+                    chanceS = chanceS.replaceAll("[^0-9]", "");
+                    int i = Integer.parseInt(chanceS);
+                    if (i > 100) {
+                        i = 100;
+                    }
+                    if (i < 0) {
+                        i = 0;
+                        chance = 0.0;
+                    }
+                    if (i != 100 && i != 0) {
+                        chance = i / 100.0;
+                    }
+                } else {
+                    chance = Double.parseDouble(chanceS);
+                    if (chance > 1.0) {
+                        chance = 1.0;
+                    }
+                    if (chance < 0) {
+                        chance = 0.0;
+                    }
+                }
                 return new FoodPotionEffect(potionEffectType, level, duration, chance);
             } else {
                 throw new UnknownPotionEffectType(format);
