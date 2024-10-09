@@ -29,7 +29,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.1</version>
                 <configuration>
-                    <outputDirectory>B:\플러그인\ConsumeFood2\1.1\dev-1</outputDirectory>
+                    <outputDirectory>B:\플러그인\ConsumeFood2\1.1</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
