@@ -1,6 +1,11 @@
+v1.2 dev - 1 {
+    - Version change to 1.2
+}
+
 v1.1 dev - 2 {
     - Fixed an issue where development builds were not displayed
 }
+
 v1.1 dev-1 {
     - Version changed to 1.1
     - Added spigot resource update notifications
