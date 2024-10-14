@@ -27,7 +27,7 @@ public class MainTabComplete implements TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (command.getName().equalsIgnoreCase("consumefood2")) {
             if (args.length == 1) {
-                return List.of("reload", "customfood", "vanillafood", "foodlevel", "saturation", "migrate");
+                return List.of("reload", "customfood", "vanillafood", "foodlevel", "saturation", "migrate", "update-inventory");
             }
             if (args.length == 2) {
                 String var = args[0];

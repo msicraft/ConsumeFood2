@@ -13,6 +13,7 @@ import me.msicraft.API.Food.*;
 import me.msicraft.consumefood2.ConsumeFood2;
 import me.msicraft.consumefood2.CustomFood.File.CustomFoodData;
 import me.msicraft.consumefood2.CustomFood.Menu.CustomFoodEditGui;
+import me.msicraft.consumefood2.CustomFood.Task.AutoUpdateTask;
 import me.msicraft.consumefood2.PlayerData.Data.PlayerData;
 import me.msicraft.consumefood2.Utils.GuiUtil;
 import me.msicraft.consumefood2.Utils.MessageUtil;
@@ -39,6 +40,10 @@ public class CustomFoodManager {
     private CoolDownType coolDownType = CoolDownType.DISABLE;
     private double globalCoolDown = 0;
     private boolean disablePlayerHeadPlace = true;
+
+    private boolean autoUpdateEnabled = false;
+    private int autoUpdateTicks = 20;
+    private AutoUpdateTask autoUpdateTask = null;
 
     private final NamespacedKey customFoodKey;
     private final NamespacedKey unStackableKey;
@@ -71,7 +76,19 @@ public class CustomFoodManager {
         this.globalCoolDown = plugin.getConfig().getDouble("CustomFood-Settings.Cooldown.Global-Cooldown", 0);
         this.disablePlayerHeadPlace = plugin.getConfig().getBoolean("CustomFood-Settings.PlayerHead.DisablePlace", true);
 
+        this.autoUpdateEnabled = plugin.getConfig().contains("CustomFood-Settings.AutoUpdateInventory.Enabled") && plugin.getConfig().getBoolean("CustomFood-Settings.AutoUpdateInventory.Enabled");
+        this.autoUpdateTicks = plugin.getConfig().contains("CustomFood-Settings.AutoUpdateInventory.UpdateTicks") ? plugin.getConfig().getInt("CustomFood-Settings.AutoUpdateInventory.UpdateTicks") : 20;
+
         loadCustomFood();
+
+        if (autoUpdateTask != null) {
+            autoUpdateTask.cancel();
+            autoUpdateTask = null;
+        }
+        if (autoUpdateEnabled) {
+            autoUpdateTask = new AutoUpdateTask(this);
+            autoUpdateTask.runTaskTimer(plugin, 0, autoUpdateTicks);
+        }
     }
 
     public void openCustomFoodEditGui(CustomFoodEditGui.Type type, Player player) {
@@ -377,6 +394,24 @@ public class CustomFoodManager {
             customFoodData.getConfig().set(path, null);
             customFoodData.saveConfig();
             unregisterCustomFood(internalName);
+        }
+    }
+
+    public void updateInventory(Player player) {
+        int max = player.getInventory().getContents().length;
+        Map<Integer, ItemStack> map = new HashMap<>(max);
+        for (int i = 0; i < max; i++) {
+            ItemStack itemStack = player.getInventory().getItem(i);
+            if (isCustomFood(itemStack)) {
+                String internalName = getInternalName(itemStack);
+                ItemStack updateItemStack = createItemStack(getCustomFood(internalName));
+                updateItemStack.setAmount(itemStack.getAmount());
+                map.put(i, updateItemStack);
+            }
+        }
+        for (int i : map.keySet()) {
+            ItemStack itemStack = map.get(i);
+            player.getInventory().setItem(i, itemStack);
         }
     }
 

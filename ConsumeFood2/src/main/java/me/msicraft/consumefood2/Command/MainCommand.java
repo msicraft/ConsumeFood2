@@ -48,6 +48,30 @@ public class MainCommand implements CommandExecutor {
                         sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "Config files reloaded");
                         return true;
                     }
+                    case "update-inventory" -> { //consumefood2 update-inventory <player>
+                        if (!sender.hasPermission("consumefood2.command.update-inventory")) {
+                            MessageUtil.sendMessage(sender, "Permission-Error");
+                            return false;
+                        }
+                        try {
+                            Player target = Bukkit.getPlayer(args[1]);
+                            if (target == null) {
+                                for (Player player : Bukkit.getOnlinePlayers()) {
+                                    if (player.isOnline()) {
+                                        plugin.getCustomFoodManager().updateInventory(player);
+                                    }
+                                }
+                                sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "All players inventories have been updated");
+                                return false;
+                            }
+                            plugin.getCustomFoodManager().updateInventory(target);
+                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.GREEN + "Target player inventory has been updated");
+                            return true;
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "/consumefood2 update-inventory [<player>]");
+                            return false;
+                        }
+                    }
                     case "migrate" -> { //consumefood2 migrate <customfood, vanillafood> [internalName, material]
                         if (Bukkit.getPluginManager().getPlugin("ConsumeFood") == null) {
                             sender.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "ConsumeFood plugin not found");

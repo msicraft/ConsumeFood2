@@ -14,3 +14,6 @@ CustomFood-Settings:
     Global-Cooldown: 3
   PlayerHead:
     DisablePlace: true
+  AutoUpdateInventory: #These options may affect server performance. If possible, use commands or higher values
+    Enabled: false
+    UpdateTicks: 20
