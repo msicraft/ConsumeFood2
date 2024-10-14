@@ -1,4 +1,4 @@
-v1.2 dev - 1 {
+v1.2 dev-1 {
     - Version change to 1.2
     - Added inventory update command
     - Added inventory update configuration
