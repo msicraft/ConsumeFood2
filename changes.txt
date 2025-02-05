@@ -1,3 +1,7 @@
+v1.2 {
+    - Fixed an issue where the plugin was not loaded properly in 1.21.3 or higher.
+}
+
 v1.2 dev-1 {
     - Version change to 1.2
     - Added inventory update command
