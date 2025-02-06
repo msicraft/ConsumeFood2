@@ -1,3 +1,9 @@
+v1.2.1 {
+    - Fixed an issue where FoodComponent was not used in versions 1.21.2 and higher
+    - Fixed an issue where the player_head texture was not visible in versions 1.20.5 and higher
+    - The consumable component has been applied to inedible foods in versions 1.21.2 and higher (ex. player_head, stone)
+}
+
 v1.2 {
     - Fixed an issue where the plugin was not loaded properly in 1.21.3 or higher.
 }

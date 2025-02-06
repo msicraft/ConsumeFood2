@@ -421,7 +421,7 @@ public class CustomFoodManager {
         }
         ItemStack itemStack = new ItemStack((Material) customFood.getOptionValue(Food.Options.MATERIAL));
         if (plugin.isUseFoodComponent()) {
-            return Upper_1_20_6.getInstance().createCustomFoodItemStack(customFood, Map.of("CustomFood", customFoodKey, "UnStackable", unStackableKey));
+            return Upper_1_20_6.getInstance().createCustomFoodItemStack(ConsumeFood2.getPlugin().getBukkitVersion(), customFood, Map.of("CustomFood", customFoodKey, "UnStackable", unStackableKey));
         }
         ItemMeta itemMeta = itemStack.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
@@ -496,6 +496,9 @@ public class CustomFoodManager {
         applyExecuteCommands(player, customFood);
         applySound(player, customFood);
         if (useFoodComponent) {
+            if (ConsumeFood2.getPlugin().getBukkitVersion() >= 1212) {
+                applyPotionEffects(player, customFood);
+            }
             return;
         }
         applyFoodLevelAndSaturation(player, customFood);

@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Set;
 
 public final class ConsumeFood2 extends JavaPlugin {
 
@@ -37,6 +36,7 @@ public final class ConsumeFood2 extends JavaPlugin {
     public static final String PREFIX = ChatColor.GREEN + "[ConsumeFood2] ";
     private boolean usePlaceHolderAPI = false;
     private boolean useFoodComponent = false;
+    private int bukkitVersion = 1161;
 
     private MessageData messageData;
 
@@ -63,16 +63,20 @@ public final class ConsumeFood2 extends JavaPlugin {
         }
 
         BukkitChecker bukkitChecker = new BukkitChecker(this, 119951);
-        String bukkitVersion = bukkitChecker.getBukkitVersion();
-        if (bukkitVersion == null) {
+        String bukkitVersionS = bukkitChecker.getBukkitVersion();
+        if (bukkitVersionS == null) {
             getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.RED + "Bukkit version not found");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         } else {
             getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Bukkit Version: " + bukkitVersion);
-            Set<String> sets = Set.of("1.20.5", "1.20.6", "1.21", "1.21.1");
-            if (sets.contains(bukkitVersion)) {
-                useFoodComponent = true;
+            try {
+                bukkitVersion = Integer.parseInt(bukkitVersionS.replaceAll("\\.", ""));
+                if (bukkitVersion >= 1205) {
+                    useFoodComponent = true;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
         }
 
@@ -191,5 +195,9 @@ public final class ConsumeFood2 extends JavaPlugin {
 
     public MessageData getMessageData() {
         return messageData;
+    }
+
+    public int getBukkitVersion() {
+        return bukkitVersion;
     }
 }

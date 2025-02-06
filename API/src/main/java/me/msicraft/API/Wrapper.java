@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface Wrapper {
 
-    ItemStack createCustomFoodItemStack(CustomFood customFood, Map<String, NamespacedKey> namespacedKeyMap);
+    ItemStack createCustomFoodItemStack(int bukkitVersion, CustomFood customFood, Map<String, NamespacedKey> namespacedKeyMap);
 
     default String translateColorCodes(String message) {
         return Common.getInstance().translateColorCodes(message);

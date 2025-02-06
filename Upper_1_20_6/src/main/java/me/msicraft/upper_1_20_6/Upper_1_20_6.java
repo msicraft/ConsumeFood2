@@ -38,7 +38,7 @@ public class Upper_1_20_6 implements Wrapper {
     }
 
     @Override
-    public ItemStack createCustomFoodItemStack(CustomFood customFood, Map<String, NamespacedKey> namespacedKeyMap) {
+    public ItemStack createCustomFoodItemStack(int bukkitVersion, CustomFood customFood, Map<String, NamespacedKey> namespacedKeyMap) {
         ItemStack itemStack = new ItemStack(customFood.getMaterial());
         ItemMeta itemMeta = itemStack.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
@@ -82,12 +82,18 @@ public class Upper_1_20_6 implements Wrapper {
         if (customFood.hasOption(Food.Options.EAT_SECONDS)) {
             double eatSecondsD = (double) customFood.getOptionValue(Food.Options.EAT_SECONDS);
             if (eatSecondsD > -1) {
-                foodComponent.setEatSeconds((float) eatSecondsD);
+                if (bukkitVersion >= 1212) {
+                } else {
+                    foodComponent.setEatSeconds((float) eatSecondsD);
+                }
             }
         }
         foodComponent.setCanAlwaysEat((boolean) customFood.getOptionValue(Food.Options.ALWAYS_EAT));
         for (FoodPotionEffect foodPotionEffect : customFood.getPotionEffects()) {
-            foodComponent.addEffect(foodPotionEffect.getPotionEffect(), Float.parseFloat(String.valueOf(foodPotionEffect.getChance())));
+            if (bukkitVersion >= 1212) {
+            } else {
+                foodComponent.addEffect(foodPotionEffect.getPotionEffect(), Float.parseFloat(String.valueOf(foodPotionEffect.getChance())));
+            }
         }
 
         dataContainer.set(namespacedKeyMap.get("CustomFood"), PersistentDataType.STRING, customFood.getInternalName());
@@ -127,6 +133,24 @@ public class Upper_1_20_6 implements Wrapper {
             }
             potionMeta.setColor(color);
             itemStack.setItemMeta(potionMeta);
+        }
+
+        if (!itemStack.getType().isEdible()) {
+            if (bukkitVersion >= 1212) {
+                NBT.modifyComponents(itemStack, nbt -> {
+                    ReadWriteNBT consumableNbt = nbt.getOrCreateCompound("minecraft:consumable");
+                    consumableNbt.setString("animation", "eat");
+                    if (customFood.hasOption(Food.Options.EAT_SECONDS)) {
+                        double eatSeconds = (double) customFood.getOptionValue(Food.Options.EAT_SECONDS);
+                        if (eatSeconds < 0) {
+                            eatSeconds = 0.0;
+                        }
+                        consumableNbt.setFloat("consume_seconds", (float) eatSeconds);
+                    }
+                    ReadWriteNBT soundNbt = consumableNbt.getOrCreateCompound("sound");
+                    soundNbt.setString("sound_id", "entity.generic.eat");
+                });
+            }
         }
         return itemStack;
     }
