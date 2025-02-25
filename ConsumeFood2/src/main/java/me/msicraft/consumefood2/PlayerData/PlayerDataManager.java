@@ -19,6 +19,12 @@ public class PlayerDataManager {
 
     private final Map<UUID, PlayerData> registeredPlayerDataMap = new HashMap<>();
 
+    public void saveAll() {
+        registeredPlayerDataMap.forEach((uuid, playerData) -> {
+            playerData.saveData();
+        });
+    }
+
     public void registerPlayerData(Player player) {
         PlayerData playerData = new PlayerData(player);
         registeredPlayerDataMap.put(player.getUniqueId(), playerData);

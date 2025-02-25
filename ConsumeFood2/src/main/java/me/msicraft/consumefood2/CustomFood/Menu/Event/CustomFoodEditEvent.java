@@ -170,6 +170,10 @@ public class CustomFoodEditEvent implements Listener {
                     int maxStackSize = Integer.parseInt(message);
                     customFood.setOption(Food.Options.MAX_STACK_SIZE, maxStackSize);
                 }
+                case MAX_CONSUME_COUNT -> {
+                    int maxConsumeCount = Integer.parseInt(message);
+                    customFood.setOption(Food.Options.MAX_CONSUME_COUNT, maxConsumeCount);
+                }
             }
             if (save) {
                 customFoodManager.saveOptionToConfig(customFood, options);
@@ -615,6 +619,20 @@ public class CustomFoodEditEvent implements Listener {
                                         customFood.setOption(Food.Options.HIDE_ADDITIONAL_TOOLTIP, true);
                                     }
                                     save = true;
+                                }
+                                case MAX_CONSUME_COUNT -> {
+                                    if (e.isLeftClick()) {
+                                        open = false;
+                                        player.sendMessage(ChatColor.GRAY + "========================================");
+                                        player.sendMessage(ChatColor.GRAY + "Please enter the max consume count");
+                                        player.sendMessage(ChatColor.GRAY + "Cancel when entering 'cancel'");
+                                        player.sendMessage(ChatColor.GRAY + "========================================");
+                                        playerData.setTempData("CustomFood_ChatEdit", data);
+                                        player.closeInventory();
+                                    } else if (e.isRightClick()) {
+                                        save = true;
+                                        customFood.setOption(Food.Options.MAX_CONSUME_COUNT, Food.Options.MAX_CONSUME_COUNT.getBaseValue());
+                                    }
                                 }
                             }
                             if (save) {

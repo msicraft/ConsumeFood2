@@ -492,10 +492,20 @@ public class CustomFoodManager {
             Bukkit.getPluginManager().callEvent(new CustomFoodConsumeEvent(true, -1,
                     player, hand, customFood));
         });
+        ItemStack itemStack = null;
+        if (hand == EquipmentSlot.HAND) {
+            itemStack = player.getInventory().getItemInMainHand();
+        } else if (hand == EquipmentSlot.OFF_HAND) {
+            itemStack = player.getInventory().getItemInOffHand();
+        }
+        if (itemStack == null) {
+            return;
+        }
 
         applyExecuteCommands(player, customFood);
         applySound(player, customFood);
         if (useFoodComponent) {
+            checkMaxConsumeCount(player, customFood, itemStack, true);
             if (ConsumeFood2.getPlugin().getBukkitVersion() >= 1212) {
                 applyPotionEffects(player, customFood);
             }
@@ -514,14 +524,42 @@ public class CustomFoodManager {
             }
         } catch (IllegalArgumentException ignored) {}
 
-        if (hand == EquipmentSlot.HAND) {
-            ItemStack handStack = player.getInventory().getItemInMainHand();
-            handStack.setAmount(handStack.getAmount() - 1);
-        } else if (hand == EquipmentSlot.OFF_HAND) {
-            ItemStack handStack = player.getInventory().getItemInOffHand();
-            handStack.setAmount(handStack.getAmount() - 1);
-        }
+        checkMaxConsumeCount(player, customFood, itemStack, false);
 
+    }
+
+    public void checkMaxConsumeCount(Player player, CustomFood customFood, ItemStack itemStack, boolean useComponent) {
+        if (customFood.hasOption(Food.Options.MAX_CONSUME_COUNT)) {
+            int maxConsumeCount = (int) customFood.getOptionValue(Food.Options.MAX_CONSUME_COUNT);
+            if (maxConsumeCount == -1) {
+                return;
+            }
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta == null) {
+                return;
+            }
+            PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
+            if (playerData == null) {
+                return;
+            }
+            String key = customFood.getInternalName() + "_ConsumeCount";
+            int consumeCount = (int) playerData.getData(key, 0);
+            if (consumeCount + 1 >= maxConsumeCount) {
+                // 모든 횟수 사용
+                if (useComponent) {
+                } else {
+                    itemStack.setAmount(itemStack.getAmount() - 1);
+                }
+                playerData.setData(key, 0);
+            } else {
+                // 횟수 남음
+                playerData.setData(key, consumeCount + 1);
+
+                if (useComponent) {
+                    player.getInventory().addItem(itemStack);
+                }
+            }
+        }
     }
 
     public void applyFoodLevelAndSaturation(Player player, CustomFood customFood) {
@@ -576,7 +614,7 @@ public class CustomFoodManager {
         if (soundS != null) {
             try {
                 String[] a = soundS.split(":");
-                String soundName = a[0];
+                String soundName = a[0].toLowerCase();
                 float volume = Float.parseFloat(a[1]);
                 float pitch = Float.parseFloat(a[2]);
                 player.playSound(player.getLocation(), soundName, volume, pitch);

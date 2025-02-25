@@ -37,6 +37,7 @@ public abstract class Food {
         ALWAYS_EAT(ValueType.BOOLEAN, true, "Always Eat", List.of("Can eat anytime (+ 1.20.5)"),false, "AlwaysEat", null),
         EAT_SECONDS(ValueType.DOUBLE, true, "Eat Seconds", List.of("Eat seconds (+ 1.20.5)", "-1 is disable"),-1.0, "EatSeconds", null),
         MAX_STACK_SIZE(ValueType.INTEGER, true, "Max Stack Size", List.of("Max Stack Size (+ 1.20.5)", "-1 is disable"),-1, "MaxStackSize", null),
+        MAX_CONSUME_COUNT(ValueType.INTEGER, true, "Max Consume Count", List.of("Number of times an item can be eaten", "-1 is disable"), -1, "MaxConsumeCount", null),
         UUID(ValueType.NONE, true, "", List.of("UUID"),null, "UUID", "UUID");
 
         private final ValueType valueType;

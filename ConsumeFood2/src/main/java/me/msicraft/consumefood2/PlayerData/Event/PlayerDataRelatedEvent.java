@@ -32,7 +32,7 @@ public class PlayerDataRelatedEvent implements Listener {
         Player player = e.getPlayer();
         PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
 
-        //playerData.loadData();
+        playerData.loadData();
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -40,7 +40,7 @@ public class PlayerDataRelatedEvent implements Listener {
         Player player = e.getPlayer();
 
         PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
-        //playerData.saveData();
+        playerData.saveData();
 
         plugin.getPlayerDataManager().unregisterPlayerData(player);
     }

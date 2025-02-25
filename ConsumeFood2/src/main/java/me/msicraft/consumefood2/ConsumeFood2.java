@@ -123,6 +123,9 @@ public final class ConsumeFood2 extends JavaPlugin {
     public void onDisable() {
         vanillaFoodManager.saveVanillaFood();
         customFoodManager.saveCustomFood();
+
+        playerDataManager.saveAll();
+
         getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.RED + "Plugin Disable");
     }
 

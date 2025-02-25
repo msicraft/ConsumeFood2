@@ -7,6 +7,8 @@ import me.msicraft.consumefood2.PlayerData.File.PlayerDataFile;
 import me.msicraft.consumefood2.VanillaFood.Menu.VanillaFoodEditGui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -21,6 +23,7 @@ public class PlayerData {
 
     private final Map<CustomGui.GuiType, CustomGui> customGuiMap = new HashMap<>();
 
+    private final Map<String, Object> dataMap = new HashMap<>();
     private final Map<String, Object> tempDataMap = new HashMap<>();
     private final Set<String> tagSet = new HashSet<>();
 
@@ -30,9 +33,22 @@ public class PlayerData {
     }
 
     public void loadData() {
+        FileConfiguration config = playerDataFile.getConfig();
+        ConfigurationSection dataSection = config.getConfigurationSection("Data");
+        if (dataSection != null) {
+            Set<String> keys = dataSection.getKeys(false);
+            for (String key : keys) {
+                dataMap.put(key, dataSection.get(key, null));
+            }
+        }
     }
 
     public void saveData() {
+        FileConfiguration config = playerDataFile.getConfig();
+        dataMap.forEach((s, o) -> {
+            config.set("Data." + s, o);
+        });
+        playerDataFile.saveConfig();
     }
 
     public CustomGui getCustomGui(CustomGui.GuiType guiType) {
@@ -101,6 +117,17 @@ public class PlayerData {
 
     public PlayerDataFile getPlayerDataFile() {
         return playerDataFile;
+    }
+
+    public void setData(String key, Object value) {
+        dataMap.put(key, value);
+    }
+
+    public Object getData(String key, Object def) {
+        if (dataMap.containsKey(key)) {
+            return dataMap.get(key);
+        }
+        return def;
     }
 
 }
