@@ -1,4 +1,8 @@
 v1.2.2 {
+    - Fixed an issue where the MaxConsumeCount option did not work in versions 1.20.5 and higher
+}
+
+v1.2.2 {
     - Fixed an error occurring when using capital letters in sound
     - Added MaxConsumeCount option to CustomFood
 }

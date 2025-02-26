@@ -506,7 +506,7 @@ public class CustomFoodManager {
         applySound(player, customFood);
         if (useFoodComponent) {
             checkMaxConsumeCount(player, customFood, itemStack, true);
-            if (ConsumeFood2.getPlugin().getBukkitVersion() >= 1212) {
+            if (plugin.getBukkitVersion() >= 1212) {
                 applyPotionEffects(player, customFood);
             }
             return;
@@ -556,7 +556,7 @@ public class CustomFoodManager {
                 playerData.setData(key, consumeCount + 1);
 
                 if (useComponent) {
-                    player.getInventory().addItem(itemStack);
+                    itemStack.setAmount(itemStack.getAmount() + 1);
                 }
             }
         }

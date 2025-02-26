@@ -69,7 +69,6 @@ public final class ConsumeFood2 extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         } else {
-            getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Bukkit Version: " + bukkitVersion);
             try {
                 bukkitVersion = Integer.parseInt(bukkitVersionS.replaceAll("\\.", ""));
                 if (bukkitVersion >= 1205) {
@@ -78,6 +77,7 @@ public final class ConsumeFood2 extends JavaPlugin {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
+            getServer().getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + "Bukkit Version: " + bukkitVersion);
         }
 
         messageData = new MessageData(this);

@@ -50,12 +50,12 @@ public class CustomFoodRelatedEvent implements Listener {
         if (internalName != null) {
             CustomFood customFood = customFoodManager.getCustomFood(internalName);
             if (customFood != null) {
+                EquipmentSlot hand = PlayerUtil.getUseHand(player, itemStack);
                 if (plugin.isUseFoodComponent()) {
-                    customFoodConsume(player, customFood, null, true);
+                    customFoodConsume(player, customFood, hand, true);
                     return;
                 }
                 e.setCancelled(true);
-                EquipmentSlot hand = PlayerUtil.getUseHand(player, itemStack);
                 customFoodConsume(player, customFood, hand, false);
             }
         }
