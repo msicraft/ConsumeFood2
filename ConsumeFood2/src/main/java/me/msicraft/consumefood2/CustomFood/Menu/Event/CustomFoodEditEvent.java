@@ -634,6 +634,15 @@ public class CustomFoodEditEvent implements Listener {
                                         customFood.setOption(Food.Options.MAX_CONSUME_COUNT, Food.Options.MAX_CONSUME_COUNT.getBaseValue());
                                     }
                                 }
+                                case DISPLAY_MAX_CONSUME_COUNT -> {
+                                    boolean b = (boolean) customFood.getOptionValue(Food.Options.DISPLAY_MAX_CONSUME_COUNT);
+                                    if (b) {
+                                        customFood.setOption(Food.Options.DISPLAY_MAX_CONSUME_COUNT, false);
+                                    } else {
+                                        customFood.setOption(Food.Options.DISPLAY_MAX_CONSUME_COUNT, true);
+                                    }
+                                    save = true;
+                                }
                             }
                             if (save) {
                                 customFoodManager.saveOptionToConfig(customFood, options);

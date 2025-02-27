@@ -4,3 +4,4 @@ CustomFood-Global-Cooldown-Left: "%customfood_name% Time Left: %customfood_globa
 CustomFood-Personal-Cooldown-Left: "%customfood_name% Time Left: %customfood_personal_timeleft%"
 VanillaFood-Global-Cooldown-Left: "%vanillafood_name% Time Left: %vanillafood_global_timeleft%"
 VanillaFood-Personal-Cooldown-Left: "%vanillafood_name% Time Left: %vanillafood_personal_timeleft%"
+MaxConsumeCount-Lore: "&7%left% / %max%"

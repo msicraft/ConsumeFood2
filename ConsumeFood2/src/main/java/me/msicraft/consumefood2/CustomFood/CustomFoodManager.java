@@ -436,10 +436,21 @@ public class CustomFoodManager {
         if (customFood.hasOption(Food.Options.CUSTOM_MODEL_DATA)) {
             itemMeta.setCustomModelData((int) customFood.getOptionValue(Food.Options.CUSTOM_MODEL_DATA));
         }
-        List<String> lore = new ArrayList<>(customFood.getLore().size());
+        List<String> lore = new ArrayList<>(customFood.getLore());
         for (String s : customFood.getLore()) {
             s = Common.getInstance().translateColorCodes(s);
             lore.add(s);
+        }
+        if (customFood.hasOption(Food.Options.MAX_CONSUME_COUNT) && (boolean) customFood.getOptionValue(Food.Options.DISPLAY_MAX_CONSUME_COUNT)) {
+            int maxConsumeCount = (int) customFood.getOptionValue(Food.Options.MAX_CONSUME_COUNT);
+            if (maxConsumeCount != -1) {
+                String maxConsumeCountLore = MessageUtil.getConfigMessage("MaxConsumeCount-Lore", true);
+                if (maxConsumeCountLore != null) {
+                    maxConsumeCountLore = maxConsumeCountLore.replaceAll("%left%", String.valueOf(maxConsumeCount));
+                    maxConsumeCountLore = maxConsumeCountLore.replaceAll("%max%", String.valueOf(maxConsumeCount));
+                    lore.add(maxConsumeCountLore);
+                }
+            }
         }
         itemMeta.setLore(lore);
 
@@ -524,42 +535,72 @@ public class CustomFoodManager {
             }
         } catch (IllegalArgumentException ignored) {}
 
-        checkMaxConsumeCount(player, customFood, itemStack, false);
-
+        if (!checkMaxConsumeCount(player, customFood, itemStack, false)) {
+            itemStack.setAmount(itemStack.getAmount() - 1);
+        }
     }
 
-    public void checkMaxConsumeCount(Player player, CustomFood customFood, ItemStack itemStack, boolean useComponent) {
+    private static final NamespacedKey MAX_CONSUME_COUNT_KEY = new NamespacedKey(ConsumeFood2.getPlugin(), "MaxConsumeCount");
+
+    public boolean checkMaxConsumeCount(Player player, CustomFood customFood, ItemStack itemStack, boolean useComponent) {
         if (customFood.hasOption(Food.Options.MAX_CONSUME_COUNT)) {
             int maxConsumeCount = (int) customFood.getOptionValue(Food.Options.MAX_CONSUME_COUNT);
             if (maxConsumeCount == -1) {
-                return;
+                return false;
             }
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta == null) {
-                return;
+                return false;
             }
-            PlayerData playerData = plugin.getPlayerDataManager().getPlayerData(player);
-            if (playerData == null) {
-                return;
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            int consumeCount = 0;
+            if (dataContainer.has(MAX_CONSUME_COUNT_KEY, PersistentDataType.STRING)) {
+                consumeCount = Integer.parseInt(dataContainer.get(MAX_CONSUME_COUNT_KEY, PersistentDataType.STRING));
             }
-            String key = customFood.getInternalName() + "_ConsumeCount";
-            int consumeCount = (int) playerData.getData(key, 0);
             if (consumeCount + 1 >= maxConsumeCount) {
+                System.out.println("test-1");
                 // 모든 횟수 사용
                 if (useComponent) {
                 } else {
                     itemStack.setAmount(itemStack.getAmount() - 1);
                 }
-                playerData.setData(key, 0);
+                dataContainer.remove(MAX_CONSUME_COUNT_KEY);
+                itemStack.setItemMeta(itemMeta);
+                return true;
             } else {
-                // 횟수 남음
-                playerData.setData(key, consumeCount + 1);
-
+                //횟수 남음
                 if (useComponent) {
-                    itemStack.setAmount(itemStack.getAmount() + 1);
+                } else {
+                    itemStack.setAmount(itemStack.getAmount() - 1);
                 }
+
+                ItemStack clone = itemStack.clone();
+                ItemMeta cloneMeta = clone.getItemMeta();
+                if (cloneMeta == null) {
+                    return false;
+                }
+                PersistentDataContainer cloneDataContainer = cloneMeta.getPersistentDataContainer();
+                cloneDataContainer.set(MAX_CONSUME_COUNT_KEY, PersistentDataType.STRING, String.valueOf(consumeCount + 1));
+
+                if (customFood.hasOption(Food.Options.DISPLAY_MAX_CONSUME_COUNT)) {
+                    if ((boolean) customFood.getOptionValue(Food.Options.DISPLAY_MAX_CONSUME_COUNT)) {
+                        String maxConsumeCountLore = MessageUtil.getConfigMessage("MaxConsumeCount-Lore", true);
+                        if (maxConsumeCountLore != null) {
+                            List<String> lore = new ArrayList<>(customFood.getLore());
+                            maxConsumeCountLore = maxConsumeCountLore.replaceAll("%left%", String.valueOf(maxConsumeCount - (consumeCount + 1)));
+                            maxConsumeCountLore = maxConsumeCountLore.replaceAll("%max%", String.valueOf(maxConsumeCount));
+                            lore.add(maxConsumeCountLore);
+                            cloneMeta.setLore(lore);
+                        }
+                    }
+                }
+                clone.setItemMeta(cloneMeta);
+                clone.setAmount(1);
+                player.getInventory().addItem(clone);
+                return true;
             }
         }
+        return false;
     }
 
     public void applyFoodLevelAndSaturation(Player player, CustomFood customFood) {
