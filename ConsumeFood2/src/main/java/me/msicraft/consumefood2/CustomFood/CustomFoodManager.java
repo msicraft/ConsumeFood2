@@ -2,6 +2,7 @@ package me.msicraft.consumefood2.CustomFood;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
+import dev.lone.itemsadder.api.CustomStack;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.Common;
 import me.msicraft.API.CoolDownType;
@@ -35,6 +36,10 @@ import java.util.*;
 
 public class CustomFoodManager {
 
+    public enum CompatibilityPlugin {
+        ITEMSADDER
+    }
+
     private final ConsumeFood2 plugin;
     private final CustomFoodData customFoodData;
     private CoolDownType coolDownType = CoolDownType.DISABLE;
@@ -48,6 +53,32 @@ public class CustomFoodManager {
     private final NamespacedKey customFoodKey;
     private final NamespacedKey unStackableKey;
 
+    private final Map<CompatibilityPlugin, Map<String, String>> compatibilityPluginListMap = new HashMap<>();
+
+    public String getInternalNameByCompatibilityPlugin(CompatibilityPlugin compatibilityPlugin, String itemId) {
+        Map<String, String> map = compatibilityPluginListMap.get(compatibilityPlugin);
+        return map.getOrDefault(itemId, null);
+    }
+
+    public CompatibilityPlugin getCompatibilityPlugin(ItemStack itemStack) {
+        if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
+            CustomStack customStack = CustomStack.byItemStack(itemStack);
+            if (customStack != null) {
+                return CompatibilityPlugin.ITEMSADDER;
+            }
+        }
+        return null;
+    }
+
+    public String getCompatibilityItemId(CompatibilityPlugin compatibilityPlugin, ItemStack itemStack) {
+        switch (compatibilityPlugin) {
+            case ITEMSADDER -> {
+                return CustomStack.byItemStack(itemStack).getId();
+            }
+        }
+        return null;
+    }
+
     public CustomFoodManager(ConsumeFood2 plugin) {
         this.plugin = plugin;
         this.customFoodData = new CustomFoodData(plugin);
@@ -60,6 +91,11 @@ public class CustomFoodManager {
     private final List<String> internalNames = new ArrayList<>();
 
     public void reloadVariables() {
+        compatibilityPluginListMap.clear();
+        for (CompatibilityPlugin compatibilityPlugin : CompatibilityPlugin.values()) {
+            compatibilityPluginListMap.put(compatibilityPlugin, new HashMap<>());
+        }
+
         customFoodData.reloadConfig();
 
         String cooldownTypeS = plugin.getConfig().getString("CustomFood-Settings.Cooldown.Type");
@@ -155,6 +191,19 @@ public class CustomFoodManager {
             Food.Options[] foodOptions = Food.Options.values();
             for (String internalName : internalNames) {
                 String path = "Food." + internalName;
+                String otherPluginCom = config.getString(path + "." + Food.Options.OTHER_PLUGIN_COMPATIBILITY.getPath());
+                if (otherPluginCom != null) {
+                    try {
+                        String[] a = otherPluginCom.split(":");
+                        String pluginName = a[0];
+                        String itemId = a[1];
+                        CompatibilityPlugin compatibilityPlugin = CompatibilityPlugin.valueOf(pluginName.toUpperCase());
+                        Map<String, String> map = compatibilityPluginListMap.get(compatibilityPlugin);
+                        map.put(itemId, internalName);
+                    } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ex) {
+                        ex.printStackTrace();
+                    }
+                }
                 String materialName = config.getString(path + ".Material");
                 if (materialName == null) {
                     materialName = "APPLE";
@@ -418,6 +467,22 @@ public class CustomFoodManager {
     public ItemStack createItemStack(CustomFood customFood) {
         if (customFood == null) {
             return GuiUtil.AIR_STACK;
+        }
+        String otherPluginCompatibility = (String) customFood.getOptionValue(Food.Options.OTHER_PLUGIN_COMPATIBILITY);
+        if (otherPluginCompatibility != null) {
+            String[] a = otherPluginCompatibility.split(":");
+            String pluginName = a[0];
+            String itemId = a[1];
+            switch (pluginName) {
+                case "ItemsAdder" -> {
+                    CustomStack customStack = CustomStack.getInstance(itemId);
+                    if (customStack != null) {
+                        return customStack.getItemStack();
+                    } else {
+                        return new ItemStack(Material.BEDROCK);
+                    }
+                }
+            }
         }
         ItemStack itemStack = new ItemStack((Material) customFood.getOptionValue(Food.Options.MATERIAL));
         if (plugin.isUseFoodComponent()) {

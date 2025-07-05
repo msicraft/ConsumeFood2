@@ -1,5 +1,6 @@
 package me.msicraft.consumefood2.CustomFood.Event;
 
+import dev.lone.itemsadder.api.ItemsAdder;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.msicraft.API.CoolDownType;
 import me.msicraft.API.CustomEvent.CustomFoodConsumeEvent;
@@ -46,7 +47,14 @@ public class CustomFoodRelatedEvent implements Listener {
     public void customFoodConsumeEvent(PlayerItemConsumeEvent e) {
         Player player = e.getPlayer();
         ItemStack itemStack = e.getItem();
-        String internalName = customFoodManager.getInternalName(itemStack);
+        String internalName = null;
+        CustomFoodManager.CompatibilityPlugin compatibilityPlugin = customFoodManager.getCompatibilityPlugin(itemStack);
+        if (compatibilityPlugin != null) {
+            internalName = customFoodManager.getInternalNameByCompatibilityPlugin(compatibilityPlugin, customFoodManager.getCompatibilityItemId(compatibilityPlugin, itemStack));
+        }
+        if (internalName == null) {
+            internalName = customFoodManager.getInternalName(itemStack);
+        }
         if (internalName != null) {
             CustomFood customFood = customFoodManager.getCustomFood(internalName);
             if (customFood != null) {
@@ -67,7 +75,14 @@ public class CustomFoodRelatedEvent implements Listener {
         ItemStack itemStack = e.getItem();
         if (itemStack != null) {
             if (e.getAction() == Action.RIGHT_CLICK_AIR) {
-                String internalName = customFoodManager.getInternalName(itemStack);
+                String internalName = null;
+                CustomFoodManager.CompatibilityPlugin compatibilityPlugin = customFoodManager.getCompatibilityPlugin(itemStack);
+                if (compatibilityPlugin != null) {
+                    internalName = customFoodManager.getInternalNameByCompatibilityPlugin(compatibilityPlugin, customFoodManager.getCompatibilityItemId(compatibilityPlugin, itemStack));
+                }
+                if (internalName == null) {
+                    internalName = customFoodManager.getInternalName(itemStack);
+                }
                 if (internalName != null) {
                     CustomFood customFood = customFoodManager.getCustomFood(internalName);
                     if (customFood != null) {

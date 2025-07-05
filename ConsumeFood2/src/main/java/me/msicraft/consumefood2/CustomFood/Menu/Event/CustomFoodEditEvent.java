@@ -1,5 +1,6 @@
 package me.msicraft.consumefood2.CustomFood.Menu.Event;
 
+import dev.lone.itemsadder.api.CustomStack;
 import me.msicraft.API.Food.CustomFood;
 import me.msicraft.API.Food.Food;
 import me.msicraft.API.Food.FoodCommand;
@@ -26,10 +27,12 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 public class CustomFoodEditEvent implements Listener {
 
+    private final List<String> pluginCompatiblityList = List.of("ItemsAdder");
     private final ConsumeFood2 plugin;
 
     public CustomFoodEditEvent(ConsumeFood2 plugin) {
@@ -173,6 +176,33 @@ public class CustomFoodEditEvent implements Listener {
                 case MAX_CONSUME_COUNT -> {
                     int maxConsumeCount = Integer.parseInt(message);
                     customFood.setOption(Food.Options.MAX_CONSUME_COUNT, maxConsumeCount);
+                }
+                case OTHER_PLUGIN_COMPATIBILITY -> {
+                    try {
+                        String[] a = message.split(":");
+                        String pluginName = a[0];
+                        if (Bukkit.getPluginManager().getPlugin(pluginName) == null) {
+                            player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "The plugin could not be found: " + pluginName);
+                        } else {
+                            String item_id = a[1];
+                            switch (pluginName) {
+                                case "ItemsAdder" -> {
+                                    if (CustomStack.isInRegistry(item_id)) {
+                                        customFood.setOption(Food.Options.OTHER_PLUGIN_COMPATIBILITY, message);
+                                    } else {
+                                        player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "This item id is not registered in ItemsAdder");
+                                    }
+                                }
+                                default -> {
+                                    player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "Incompatible plugin name: " + pluginName);
+                                }
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        save = false;
+                        player.sendMessage(ConsumeFood2.PREFIX + ChatColor.RED + "=====Invalid Command Format=====");
+                        player.sendMessage(ConsumeFood2.PREFIX + ChatColor.YELLOW + "Format: <plugin>:<item_id>");
+                    }
                 }
             }
             if (save) {
@@ -642,6 +672,22 @@ public class CustomFoodEditEvent implements Listener {
                                         customFood.setOption(Food.Options.DISPLAY_MAX_CONSUME_COUNT, true);
                                     }
                                     save = true;
+                                }
+                                case OTHER_PLUGIN_COMPATIBILITY -> {
+                                    if (e.isLeftClick()) {
+                                        open = false;
+                                        player.sendMessage(ChatColor.GRAY + "========================================");
+                                        player.sendMessage(ChatColor.GRAY + "Please enter the other plugin compatibility");
+                                        player.sendMessage(ChatColor.GRAY + "Format: <plugin>:<item_id>, ex: ItemsAdder:test");
+                                        player.sendMessage(ChatColor.GRAY + "Compatibility List: " + pluginCompatiblityList);
+                                        player.sendMessage(ChatColor.GRAY + "Cancel when entering 'cancel'");
+                                        player.sendMessage(ChatColor.GRAY + "========================================");
+                                        playerData.setTempData("CustomFood_ChatEdit", data);
+                                        player.closeInventory();
+                                    } else if (e.isRightClick()) {
+                                        save = true;
+                                        customFood.setOption(Food.Options.OTHER_PLUGIN_COMPATIBILITY, Food.Options.OTHER_PLUGIN_COMPATIBILITY.getBaseValue());
+                                    }
                                 }
                             }
                             if (save) {

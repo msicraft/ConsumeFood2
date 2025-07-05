@@ -1,3 +1,11 @@
+v1.3 dev-2 {
+    - Fixed NBT-API version issue in 1.21.5+
+}
+
+v1.3 dev-1 {
+    - Added OtherPluginCompatibility option
+}
+
 v1.2.2 dev-3 {
     - Fixed an issue where foods with a MaxConsumeCount value of -1 were not being consumed properly
     - Added DisplayMaxConsumeCount option to CustomFood

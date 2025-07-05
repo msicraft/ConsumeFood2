@@ -298,6 +298,10 @@ public class CustomFoodEditGui extends CustomGui {
                     itemStack = new ItemStack(Material.COOKED_BEEF);
                     lore.add(ChatColor.GRAY + "Current DisplayMaxConsumeCount: " + customFood.getOptionValue(Food.Options.DISPLAY_MAX_CONSUME_COUNT));
                 }
+                case OTHER_PLUGIN_COMPATIBILITY -> {
+                    itemStack = new ItemStack(Material.BEDROCK);
+                    lore.add(ChatColor.GREEN + "Current OtherPluginCompatibility: " + customFood.getOptionValue(Food.Options.OTHER_PLUGIN_COMPATIBILITY));
+                }
             }
             itemMeta = itemStack.getItemMeta();
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
